@@ -1,32 +1,41 @@
+// server.js
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
 
 dotenv.config();
+
 const app = express();
+const PORT = process.env.PORT || 10000;
+
 app.use(cors());
 app.use(express.json());
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Создаём клиент OpenAI с ключом из переменной окружения
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
 
+// POST /ai
 app.post('/ai', async (req, res) => {
   const { message } = req.body;
   if (!message) return res.status(400).json({ error: 'Message is required' });
 
   try {
-    const response = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
-      messages: [{ role: "user", content: message }],
-      max_tokens: 200
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-3.5-turbo', // или 'gpt-4', если есть доступ
+      messages: [{ role: 'user', content: message }],
     });
 
-    res.json({ response: response.choices[0].message.content });
-
+    const aiResponse = completion.choices[0].message.content;
+    res.json({ response: aiResponse });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: err.message });
+    console.error('OpenAI API error:', err.message);
+    res.status(500).json({ error: 'AI request failed' });
   }
 });
 
-app.listen(process.env.PORT, () => console.log(`Server started on http://localhost:${process.env.PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server started on port ${PORT}`);
+});
