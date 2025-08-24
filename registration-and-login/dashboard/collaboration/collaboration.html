@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaboration Hub</title>
+    <link rel="stylesheet" href="collaboration.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="header-title">Collaboration Hub</h1>
+                <p class="header-subtitle">Work on group projects and track tasks</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Navigation -->
+        <nav class="navigation">
+            <div class="nav-item active" data-section="groups">
+                <i class="fas fa-users"></i>
+                <span>Groups</span>
+            </div>
+            <div class="nav-item" data-section="projects">
+                <i class="fas fa-folder"></i>
+                <span>Projects</span>
+            </div>
+            <div class="nav-item" data-section="tasks">
+                <i class="fas fa-tasks"></i>
+                <span>Tasks</span>
+            </div>
+        </nav>
+
+        <!-- Breadcrumb -->
+        <div class="breadcrumb" id="breadcrumb">
+            <span class="breadcrumb-item active">Groups</span>
+        </div>
+
+        <!-- Groups Section -->
+        <section class="section" id="groupsSection">
+            <div class="section-header">
+                <h2>Your Groups</h2>
+                <button class="primary-btn" id="createGroupBtn">
+                    <i class="fas fa-plus"></i>
+                    Create Group
+                </button>
+            </div>
+            <div class="groups-grid" id="groupsGrid">
+                <!-- Groups will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Projects Section -->
+        <section class="section" id="projectsSection" style="display: none;">
+            <div class="section-header">
+                <h2 id="projectsTitle">Projects</h2>
+                <button class="primary-btn" id="createProjectBtn">
+                    <i class="fas fa-plus"></i>
+                    Add Project
+                </button>
+            </div>
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be loaded here -->
+            </div>
+        </section>
+
+        <!-- Tasks Section -->
+        <section class="section" id="tasksSection" style="display: none;">
+            <div class="section-header">
+                <h2 id="tasksTitle">Tasks</h2>
+                <div class="task-controls">
+                    <select id="taskFilter" class="filter-select">
+                        <option value="">All Tasks</option>
+                        <option value="high">High Priority</option>
+                        <option value="medium">Medium Priority</option>
+                        <option value="low">Low Priority</option>
+                    </select>
+                    <button class="primary-btn" id="createTaskBtn">
+                        <i class="fas fa-plus"></i>
+                        Add Task
+                    </button>
+                </div>
+            </div>
+            <div class="kanban-board" id="kanbanBoard">
+                <div class="kanban-column" data-status="todo">
+                    <div class="column-header">
+                        <h3>To Do</h3>
+                        <span class="task-count" id="todoCount">0</span>
+                    </div>
+                    <div class="column-content" id="todoTasks"></div>
+                </div>
+                <div class="kanban-column" data-status="inprogress">
+                    <div class="column-header">
+                        <h3>In Progress</h3>
+                        <span class="task-count" id="inprogressCount">0</span>
+                    </div>
+                    <div class="column-content" id="inprogressTasks"></div>
+                </div>
+                <div class="kanban-column" data-status="review">
+                    <div class="column-header">
+                        <h3>Review</h3>
+                        <span class="task-count" id="reviewCount">0</span>
+                    </div>
+                    <div class="column-content" id="reviewTasks"></div>
+                </div>
+                <div class="kanban-column" data-status="done">
+                    <div class="column-header">
+                        <h3>Done</h3>
+                        <span class="task-count" id="doneCount">0</span>
+                    </div>
+                    <div class="column-content" id="doneTasks"></div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modals -->
+    <!-- Create Group Modal -->
+    <div class="modal-overlay" id="createGroupModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Create New Group</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form class="modal-form" id="createGroupForm">
+                <input type="text" id="groupName" placeholder="Group Name" required>
+                <textarea id="groupDescription" placeholder="Group Description" rows="3" required></textarea>
+                <button type="submit" class="submit-btn">Create Group</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create Project Modal -->
+    <div class="modal-overlay" id="createProjectModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Add New Project</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form class="modal-form" id="createProjectForm">
+                <input type="text" id="projectTitle" placeholder="Project Title" required>
+                <textarea id="projectDescription" placeholder="Project Description" rows="3" required></textarea>
+                <input type="date" id="projectDeadline" required>
+                <button type="submit" class="submit-btn">Add Project</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Create/Edit Task Modal -->
+    <div class="modal-overlay" id="taskModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="taskModalTitle">Add New Task</h3>
+                <button class="modal-close">&times;</button>
+            </div>
+            <form class="modal-form" id="taskForm">
+                <input type="text" id="taskTitle" placeholder="Task Title" required>
+                <textarea id="taskDescription" placeholder="Task Description" rows="3" required></textarea>
+                <input type="text" id="taskAssignee" placeholder="Assignee Name" required>
+                <select id="taskPriority" required>
+                    <option value="">Select Priority</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+                <select id="taskStatus" required>
+                    <option value="todo">To Do</option>
+                    <option value="inprogress">In Progress</option>
+                    <option value="review">Review</option>
+                    <option value="done">Done</option>
+                </select>
+                <input type="date" id="taskDeadline" required>
+                <div class="modal-actions">
+                    <button type="submit" class="submit-btn" id="saveTaskBtn">Save Task</button>
+                    <button type="button" class="danger-btn" id="deleteTaskBtn" style="display: none;">Delete Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Firebase SDKs (правильный порядок) -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+
+    <!-- Application Scripts -->
+    <script src="firebase-config.js"></script>
+    <script src="projects.js"></script>
+    <script src="tasks.js"></script>
+    <script src="app.js"></script>
+    <script src="groups.js"></script>
+</body>
+</html>

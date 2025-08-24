@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flashcards Trainer 🧠</title>
+    <link rel="stylesheet" href="flashcards.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landingPage" class="page active">
+        <div class="container">
+            <header class="landing-header">
+                <h1 class="main-title">Flashcards Trainer</h1>
+                <p class="subtitle">Master any subject with interactive flashcards</p>
+            </header>
+            
+            <div class="landing-actions">
+                <button id="startTrainingBtn" class="btn btn-primary btn-large">
+                    Start Training
+                </button>
+                <button id="createCardBtn" class="btn btn-secondary btn-large">
+                    Create New Card
+                </button>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">📚</div>
+                    <h3>Interactive Learning</h3>
+                    <p>Flip cards to reveal definitions and test your knowledge</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Progress Tracking</h3>
+                    <p>Keep track of your learning progress with Firebase</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>AI Generated</h3>
+                    <p>Generate new flashcards with AI assistance</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Training Page -->
+    <div id="trainingPage" class="page">
+        <div class="container">
+            <header class="training-header">
+                <button id="backBtn" class="btn btn-ghost">
+                    ← Back to Home
+                </button>
+                <div class="progress-info">
+                    <span id="cardCounter">Card 1 of 10</span>
+                </div>
+            </header>
+
+            <div class="flashcard-container">
+                <div id="flashcard" class="flashcard">
+                    <div class="flashcard-inner">
+                        <div class="flashcard-front">
+                            <div class="card-label">Term</div>
+                            <div id="cardTerm" class="card-content">
+                                Loading...
+                            </div>
+                        </div>
+                        <div class="flashcard-back">
+                            <div class="card-label">Definition</div>
+                            <div id="cardDefinition" class="card-content">
+                                Loading...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="training-controls">
+                <button id="flipCardBtn" class="btn btn-secondary">
+                    Show Definition
+                </button>
+                <button id="nextCardBtn" class="btn btn-primary">
+                    Next Card
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Card Modal -->
+    <div id="createCardModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Flashcard</h2>
+                <button id="closeModalBtn" class="close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newTerm">Term</label>
+                    <input type="text" id="newTerm" placeholder="Enter the term or question">
+                </div>
+                <div class="form-group">
+                    <label for="newDefinition">Definition</label>
+                    <textarea id="newDefinition" rows="4" placeholder="Enter the definition or answer"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="aiPrompt">Or generate with AI</label>
+                    <input type="text" id="aiPrompt" placeholder="e.g., 'Generate a JavaScript concept'">
+                    <button id="generateAIBtn" class="btn btn-ghost btn-small">Generate with AI</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="cancelBtn" class="btn btn-ghost">Cancel</button>
+                <button id="saveCardBtn" class="btn btn-primary">Save Card</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification" class="notification"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading...</p>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getFirestore } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+        
+        // Make Firebase available globally
+        window.firebaseApp = null;
+        window.db = null;
+        
+        // Initialize when config is loaded
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { firebaseConfig } = await import('./firebase-config.js');
+            if (firebaseConfig.apiKey) {
+                window.firebaseApp = initializeApp(firebaseConfig);
+                window.db = getFirestore(window.firebaseApp);
+            }
+        });
+    </script>
+    <script src="flashcards.js"></script>
+</body>
+</html>

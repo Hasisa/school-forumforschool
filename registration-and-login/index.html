@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EduConnect – Azerbaijani School Forum & Community</title>
+  <meta name="description" content="EduConnect - Join school communities, share knowledge and your skills" />
+  <meta name="google-site-verification" content="XyDOtYQ2JNWcKSvWsxIkicOrqwbS4rKpVvhQScpdQDQ">
+  <link rel="canonical" href="https://educonnect-958e2.web.app/" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ====== BASE STYLES ====== */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary-color: #2563eb;
+      --primary-hover: #1e40af;
+      --secondary-color: #f1f5f9;
+      --accent-color: #0ea5e9;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --error-color: #ef4444;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --text-light: #94a3b8;
+      --border-color: #e2e8f0;
+      --background-color: #f8fafc;
+      --card-background: #ffffff;
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+      --border-radius: 8px;
+      --border-radius-lg: 12px;
+      --transition: all 0.2s ease-in-out;
+    }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      line-height: 1.6;
+    }
+/* ====== CARD ====== */
+.registration-container { 
+  width: 100%; 
+  max-width: 500px; 
+}
+
+.registration-card { 
+  background: var(--card-background); 
+  border-radius: var(--border-radius-lg); 
+  box-shadow: var(--shadow-lg); 
+  overflow: hidden; 
+  animation: slideUp 0.6s ease-out; 
+  min-height: 850px; 
+  padding: 0 0 20px 0; /* убран верхний padding, оставлен нижний для формы */
+}
+
+@keyframes slideUp { 
+  from { opacity: 0; transform: translateY(30px); } 
+  to { opacity: 1; transform: translateY(0); } 
+}
+
+/* ====== HEADER ====== */
+.header { 
+  padding: 32px; 
+  text-align: center; 
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); 
+  color: white; 
+  border-top-left-radius: var(--border-radius-lg);
+  border-top-right-radius: var(--border-radius-lg);
+}
+
+.header h1 { 
+  font-size: 28px; 
+  font-weight: 700; 
+  margin-bottom: 8px; 
+}
+
+/* ====== FORM ====== */
+.registration-form { padding: 32px; }
+
+.form-group { margin-bottom: 24px; }
+.form-group label { 
+  display: block; 
+  margin-bottom: 8px; 
+  font-weight: 500; 
+  color: var(--text-primary); 
+  font-size: 14px; 
+}
+.form-group input { 
+  width: 100%; 
+  padding: 12px 16px; 
+  border: 2px solid var(--border-color); 
+  border-radius: var(--border-radius); 
+  font-size: 16px; 
+  transition: var(--transition); 
+}
+.form-group input:focus { 
+  border-color: var(--primary-color); 
+  outline: none; 
+}
+
+/* ====== PASSWORD TOGGLE ====== */
+.password-input-wrapper { position: relative; }
+.toggle-password { 
+  position: absolute; 
+  right: 12px; 
+  top: 50%; 
+  transform: translateY(-50%); 
+  cursor: pointer; 
+  color: var(--text-light); 
+  transition: var(--transition); 
+}
+.toggle-password:hover { color: var(--primary-color); }
+
+/* ====== AVATAR UPLOAD ====== */
+.avatar-upload { 
+  border: 2px dashed var(--border-color); 
+  border-radius: var(--border-radius-lg); 
+  padding: 24px; 
+  text-align: center; 
+  cursor: pointer; 
+  transition: var(--transition); 
+}
+.avatar-upload:hover { 
+  border-color: var(--primary-color); 
+  background: var(--secondary-color); 
+}
+.avatar-preview { 
+  width: 80px; 
+  height: 80px; 
+  margin: 0 auto 16px; 
+  border-radius: 50%; 
+  overflow: hidden; 
+  background: var(--secondary-color); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+.avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ====== PASSWORD STRENGTH ====== */
+.password-strength { height: 6px; border-radius: 3px; margin-top: 6px; transition: var(--transition); }
+.strength-weak { background: var(--error-color); width: 33%; }
+.strength-medium { background: var(--warning-color); width: 66%; }
+.strength-strong { background: var(--success-color); width: 100%; }
+
+/* ====== CHECKBOX ====== */
+.checkbox-label { display: flex; align-items: center; font-size: 14px; color: var(--text-secondary); cursor: pointer; gap:6px; }
+.checkbox-label input[type="checkbox"] { margin:0; width:18px; height:18px; vertical-align:middle; }
+.checkmark { width: 18px; height: 18px; border: 2px solid var(--border-color); border-radius: 4px; display:flex; align-items:center; justify-content:center; }
+.checkbox-label input:checked + .checkmark { background: var(--primary-color); border-color: var(--primary-color); }
+
+/* ====== SUBMIT BUTTON ====== */
+.submit-btn { 
+  width: 100%; 
+  padding: 14px 24px; 
+  background: linear-gradient(135deg, var(--primary-color), var(--accent-color)); 
+  color: white; 
+  border: none; 
+  border-radius: var(--border-radius); 
+  font-size: 16px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: var(--transition); 
+}
+.submit-btn:hover { background: linear-gradient(135deg, var(--primary-hover), #0284c7); }
+.submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ====== ERROR MESSAGES ====== */
+.error-message { color: var(--error-color); font-size: 12px; margin-top: 4px; }
+
+/* ====== LOADER ====== */
+.loader { border: 3px solid var(--secondary-color); border-top: 3px solid var(--primary-color); border-radius: 50%; width: 16px; height: 16px; animation: spin 1s linear infinite; display: inline-block; margin-right: 8px; vertical-align: middle; }
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* ====== FORM ROW ====== */
+.form-row { display: flex; gap: 16px; }
+.form-row .form-group { flex:1; }
+@media (max-width: 600px) { .form-row { flex-direction: column; gap:0; } }
+
+.avatar-preview svg { width: 48px; height: 48px; color: var(--text-light); }
+
+/* ====== SEPARATOR ====== */
+.separator { text-align:center; margin-top:20px; }
+.thin-line { border:0; height:1px; background: var(--border-color); margin-bottom:10px; }
+.signin-text { font-size:14px; color: var(--text-secondary); }
+.signin-text a { color: var(--primary-color); text-decoration:underline; margin-left:4px; font-weight:600; }
+.signin-text a:hover { color: var(--primary-hover); }
+
+  </style>
+</head>
+<body>
+  <div class="registration-container">
+    <div class="registration-card">
+      <div class="header">
+        <h1>Join EduConnect</h1>
+        <p>Create your account to connect with schoolmates</p>
+      </div>
+
+      <form class="registration-form" id="registrationForm" novalidate>
+        <!-- first name -->
+        <!-- first + last name в одну строку -->
+    <div class="form-row">
+      <div class="form-group">
+        <label for="firstName">First Name</label>
+        <input type="text" id="firstName" required />
+        <span class="error-message" id="firstNameError"></span>
+      </div>
+
+      <div class="form-group">
+        <label for="lastName">Last Name</label>
+        <input type="text" id="lastName" required />
+        <span class="error-message" id="lastNameError"></span>
+      </div>
+    </div>
+            <!-- email -->
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email" required />
+          <span class="error-message" id="emailError"></span>
+        </div>
+
+        <!-- password -->
+<div class="form-group">
+  <label for="password">Password</label>
+  <div class="password-input-wrapper">
+    <input type="password" id="password" required minlength="8" />
+    <span class="toggle-password" data-target="password">
+      <!-- серый контур глаза -->
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor" width="22" height="22">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M1.5 12s4-7.5 10.5-7.5S22.5 12 22.5 12s-4 7.5-10.5 7.5S1.5 12 1.5 12z" />
+        <circle cx="12" cy="12" r="3" stroke-width="2" />
+      </svg>
+    </span>
+  </div>
+  <div class="password-strength" id="passwordStrength"></div>
+  <span class="error-message" id="passwordError"></span>
+</div>
+
+<!-- confirm password -->
+<div class="form-group">
+  <label for="confirmPassword">Confirm Password</label>
+  <div class="password-input-wrapper">
+    <input type="password" id="confirmPassword" required minlength="8" />
+    <span class="toggle-password" data-target="confirmPassword">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+           stroke="currentColor" width="22" height="22">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M1.5 12s4-7.5 10.5-7.5S22.5 12 22.5 12s-4 7.5-10.5 7.5S1.5 12 1.5 12z" />
+        <circle cx="12" cy="12" r="3" stroke-width="2" />
+      </svg>
+    </span>
+  </div>
+  <span class="error-message" id="confirmPasswordError"></span>
+</div>
+
+
+        <!-- avatar -->
+        <div class="form-group avatar-group">
+  <label>Upload Avatar</label>
+  <div class="avatar-upload" id="avatarUpload">
+    <div class="avatar-preview" id="avatarPreview">
+      <!-- Иконка человечка по умолчанию -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+           width="48" height="48" fill="none"
+           stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+      </svg>
+    </div>
+    <p>Click or drag file to upload</p>
+  </div>
+  <input type="file" id="avatarInput" accept="image/png, image/jpeg"
+         style="opacity:0; width:0; height:0; position:absolute;" />
+  <span class="error-message" id="avatarError"></span>
+</div>
+
+        <!-- terms -->
+        <!-- terms -->
+<!-- terms -->
+<!-- terms -->
+<div class="form-group">
+  <label class="checkbox-label">
+    <input type="checkbox" id="termsCheckbox" />
+    <span>
+      I agree to the <a href="https://educonnect-958e2.web.app/terms.html" target="_blank">Terms and Conditions</a>
+    </span>
+  </label>
+  <span class="error-message" id="termsError"></span>
+</div>
+
+
+
+        <!-- button -->
+        <button type="submit" class="submit-btn" id="submitBtn">Create Account</button>
+</form>
+
+<div id="messageBox" style="margin-top:15px;font-weight:600;"></div>
+
+<!-- separator и ссылка -->
+<div class="separator">
+  <hr class="thin-line" />
+  <p class="signin-text">
+    Already have an account? 
+    <a href="signin.html">Sign in here</a>
+  </p>
+</div>
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-auth.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-firestore.js";
+
+document.addEventListener("DOMContentLoaded", () => {
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+    authDomain: "educonnect-958e2.firebaseapp.com",
+    projectId: "educonnect-958e2",
+    storageBucket: "educonnect-958e2.appspot.com",
+    messagingSenderId: "1044066506835",
+    appId: "1:1044066506835:web:ad2866ebfe60aa90978ea6",
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // элементы
+  const registrationForm = document.getElementById("registrationForm");
+  const submitBtn = document.getElementById("submitBtn");
+  const messageBox = document.getElementById("messageBox");
+  const firstNameInput = document.getElementById("firstName");
+  const lastNameInput = document.getElementById("lastName");
+  const emailInput = document.getElementById("email");
+  const passwordInput = document.getElementById("password");
+  const confirmPasswordInput = document.getElementById("confirmPassword");
+  const avatarInput = document.getElementById("avatarInput");
+  const avatarUpload = document.getElementById("avatarUpload");
+  const avatarPreview = document.getElementById("avatarPreview");
+  const termsCheckbox = document.getElementById("termsCheckbox");
+  const avatarError = document.getElementById("avatarError");
+
+  let uploadedAvatarURL = "";
+
+  // password toggle
+  document.querySelectorAll(".toggle-password").forEach(icon => {
+    icon.addEventListener("click", () => {
+      const targetId = icon.getAttribute("data-target");
+      const input = document.getElementById(targetId);
+      input.type = input.type === "password" ? "text" : "password";
+    });
+  });
+
+  // password strength
+  passwordInput.addEventListener("input", () => {
+    const val = passwordInput.value;
+    const strengthBar = document.getElementById("passwordStrength");
+    strengthBar.className = "password-strength";
+    if (val.length >= 8) strengthBar.classList.add("strength-weak");
+    if (/[A-Z]/.test(val) && /[0-9]/.test(val)) strengthBar.classList.add("strength-medium");
+    if (/[^A-Za-z0-9]/.test(val) && val.length >= 12) strengthBar.classList.add("strength-strong");
+  });
+
+  // avatar click
+  avatarUpload.addEventListener("click", () => avatarInput.click());
+
+  avatarInput.addEventListener("change", async (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+  if (file.size > 2 * 1024 * 1024) { // 2MB лимит
+    avatarError.textContent = "File must be < 2MB";
+    return;
+  }
+
+  avatarError.textContent = ""; // очищаем ошибки
+
+  // предварительный просмотр
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    avatarPreview.innerHTML = `<img src="${e.target.result}" alt="Avatar" />`;
+  };
+  reader.readAsDataURL(file);
+
+  // загрузка в Cloudinary
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", "unsigned-presnt"); // замени на свой upload preset
+
+    const response = await fetch("https://api.cloudinary.com/v1_1/dpbobj2j2/image/upload", {
+      method: "POST",
+      body: formData
+    });
+
+    const data = await response.json();
+    if (data.secure_url) {
+      uploadedAvatarURL = data.secure_url; // сохраняем ссылку на Cloudinary
+    } else {
+      avatarError.textContent = "Failed to upload avatar";
+    }
+  } catch (err) {
+    console.error("Cloudinary upload error:", err);
+    avatarError.textContent = "Error uploading avatar";
+  }
+});
+  // submit
+  registrationForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    console.log("Submit clicked");
+
+    if (!firstNameInput.value.trim()) return messageBox.textContent="First name required";
+    if (!lastNameInput.value.trim()) return messageBox.textContent="Last name required";
+    if (!/\S+@\S+\.\S+/.test(emailInput.value)) return messageBox.textContent="Invalid email";
+    if (passwordInput.value.length < 8) return messageBox.textContent="Password min 8 chars";
+    if (passwordInput.value !== confirmPasswordInput.value) return messageBox.textContent="Passwords do not match";
+    if (!termsCheckbox.checked) return messageBox.textContent="Accept terms first";
+
+    submitBtn.disabled = true;
+    messageBox.textContent = "Registering...";
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, emailInput.value, passwordInput.value);
+      const user = userCredential.user;
+      console.log("User created:", user.uid);
+
+      await setDoc(doc(db, "users", user.uid), {
+        firstName: firstNameInput.value.trim(),
+        lastName: lastNameInput.value.trim(),
+        email: emailInput.value.trim(),
+        avatarUrl: uploadedAvatarURL
+      });
+
+      messageBox.style.color = "green";
+      messageBox.textContent = "Регистрация успешна! Переход в Dashboard...";
+
+      setTimeout(() => {
+        window.location.href = "./dashboard/dashboard.html";
+      }, 1200);
+    } catch (err) {
+      console.error("Registration error:", err.code, err.message);
+      messageBox.style.color = "red";
+      messageBox.textContent = "Ошибка: " + err.message;
+    } finally {
+      submitBtn.disabled = false;
+    }
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://educonnect-958e2.web.app/sitemap.xml

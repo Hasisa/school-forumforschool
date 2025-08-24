@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Home Feed - Dashboard</title>
+<link rel="stylesheet" href="style3.css" />
+<style>
+  /* Посты и действия */
+  .post-likes-count { margin-left: 8px; font-weight: bold; }
+  .post-actions { margin-top: 10px; display: flex; gap: 10px; }
+  button.like-btn, button.reply-btn {
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: black;
+    transition: color 0.3s ease;
+  }
+  button.like-btn svg, button.reply-btn svg {
+    width: 20px; height: 20px;
+    stroke: black; fill: transparent;
+    transition: fill 0.3s ease;
+  }
+  button.like-btn.liked svg { fill: black; }
+  button.like-btn:hover svg, button.reply-btn:hover svg { stroke: #555; }
+
+  /* Комментарии */
+  .comments-section { margin-top: 12px; padding-left: 12px; border-left: 3px solid #ddd; display: none; }
+  .comment { margin-bottom: 8px; font-size: 0.9em; color: #333; }
+  .comment strong { color: #222; }
+  .comment-input { margin-top: 10px; display: flex; gap: 8px; }
+  .comment-input input { flex-grow: 1; padding: 6px; }
+  .comment-input button { padding: 6px 12px; cursor: pointer; }
+
+  /* Аватар и информация автора */
+  .post-header { display: flex; align-items: center; gap: 10px; }
+  .author-avatar-container { width: 40px; height: 40px; flex-shrink: 0; }
+  .author-avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+  .author-initials {
+    width: 40px; height: 40px; border-radius: 50%;
+    background-color: #888; color: white;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: bold; font-size: 16px; text-transform: uppercase;
+  }
+  .post-info { display: flex; flex-direction: column; }
+  .post-info a { text-decoration: none; cursor: pointer; }
+  .post-info a:hover { text-decoration: underline; color: #4f46e5; }
+
+  /* Вложения */
+  .post-attachments { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+  .post-attachment {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; border-radius: 6px;
+    background-color: #f3f4f6; color: #1f2937;
+    border: 1px solid #d1d5db; font-size: 0.875rem;
+    cursor: pointer; transition: background-color 0.2s, color 0.2s;
+    max-width: fit-content;
+  }
+  .post-attachment:hover { background-color: #4f46e5; color: #fff; }
+  .post-attachment .download-btn {
+    background-color: #4f46e5; color: #fff; border: none; padding: 1px 1px;
+    font-size: 0.75rem; border-radius: 6px; cursor: pointer; transition: background-color 0.3s; user-select: none;
+  }
+  .post-attachment .download-btn:hover { background-color: #3730a3; }
+  .post-attachment .download-btn svg { width: 14px; height: 14px; fill: currentColor; margin-right: 4px; }
+
+  .post-images img { max-width: 200px; max-height: 200px; object-fit: cover; border-radius: 6px; }
+</style>
+</head>
+<body>
+<header class="header" role="banner">
+  <div class="header-content">
+    <div class="logo"><h2>EduConnect</h2></div>
+    <nav class="nav" role="navigation" aria-label="Primary navigation">
+      <a href="homefeed.html" class="nav-link active" aria-current="page">Home Feed</a>
+      <a href="../materials/materials.html" class="nav-link">Lesson Categories</a>
+      <a href="../communities/communities.html" class="nav-link">Communities</a>
+      <a href="../dashboard.html" class="nav-link">Dashboard</a>
+    </nav>
+    <div class="header-actions">
+      <div class="search-container">
+        <input type="text" placeholder="Search users by name..." class="search-input" aria-label="Search users"/>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="container" role="main">
+  <div class="header-section" aria-label="Page header">
+    <h1>Home Feed</h1>
+    <p>Latest posts from the community</p>
+  </div>
+  <div id="error-container" class="error" role="alert" style="display:none;"></div>
+  <div id="loading" class="loading" aria-live="polite" aria-busy="true" style="display:flex;">
+    <div class="spinner"></div><span>Loading posts...</span>
+  </div>
+  <section id="feed" class="feed" aria-live="polite" aria-relevant="additions"></section>
+  <div id="empty-state" class="empty-state" style="display:none;">
+    <h3>No posts yet</h3>
+    <p>Be the first to share something with the community!</p>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+  authDomain: "educonnect-958e2.firebaseapp.com",
+  projectId: "educonnect-958e2",
+  storageBucket: "educonnect-958e2.firebasestorage.com",
+  messagingSenderId: "1044066506835",
+  appId: "1:1044066506835:web:ad2866ebfe60aa90978ea6"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const feedContainer = document.getElementById('feed');
+const loadingIndicator = document.getElementById('loading');
+const emptyState = document.getElementById('empty-state');
+const errorContainer = document.getElementById('error-container');
+let currentUser = null;
+
+async function toggleLike(postRef, likedBy, postElement) {
+  if (!currentUser) return alert('Please log in to like posts.');
+  const userId = currentUser.uid;
+  const hasLiked = likedBy.includes(userId);
+  const updatedLikedBy = hasLiked ? likedBy.filter(id => id !== userId) : [...likedBy, userId];
+  const newLikesCount = updatedLikedBy.length;
+  try {
+    await postRef.update({ likedBy: updatedLikedBy, likes: newLikesCount });
+    const likeBtn = postElement.querySelector('button.like-btn');
+    likeBtn.classList.toggle('liked', !hasLiked);
+    postElement.querySelector('.post-likes-count').textContent = newLikesCount;
+    postElement.likedBy = updatedLikedBy;
+  } catch (err) { console.error('Error updating like:', err); alert('Failed to update like.'); }
+}
+
+async function createPostElement(doc) {
+  const post = doc.data();
+  const postCard = document.createElement('article');
+  postCard.className = 'post-card';
+  postCard.setAttribute('tabindex', '0');
+  postCard.likedBy = post.likedBy || [];
+
+  const createdAt = post.createdAt?.toDate?.() || null;
+  const formattedDate = createdAt ? createdAt.toLocaleDateString('en-US', { year:'numeric', month:'short', day:'numeric' }) : '';
+
+  let authorName = 'Unknown', authorPhotoURL = null;
+  if (post.authorId) {
+    try {
+      const userDoc = await db.collection('users').doc(post.authorId).get();
+      if (userDoc.exists) {
+        const userData = userDoc.data();
+        authorName = `${userData.firstName||''} ${userData.lastName||''}`.trim() || 'Unknown';
+        authorPhotoURL = userData.avatarUrl || null;
+      }
+    } catch(e){ console.error(e); }
+  }
+
+  let communityName = 'Unknown Community';
+  const communityId = doc.ref.parent.parent?.id || null;
+  if(communityId){
+    try{
+      const communityDoc = await db.collection('communities').doc(communityId).get();
+      if(communityDoc.exists) communityName = communityDoc.data().name || communityName;
+    } catch(e){ console.error(e); }
+  }
+
+  // Attachments
+  let attachmentsHtml = '';
+  if(post.attachment){
+    attachmentsHtml += '<div class="post-attachments">';
+    const file = post.attachment;
+    if(file.url.match(/\.(jpeg|jpg|gif|png)$/i)){
+      attachmentsHtml += `<div class="post-images"><img src="${file.url}" alt="${file.name}"></div>`;
+    } else {
+      attachmentsHtml += `
+      <div class="post-attachment">
+        <span>${file.name}</span>
+        <button class="download-btn" data-url="${file.url}" data-filename="${file.name}">
+          <svg viewBox="0 0 24 24"><path d="M12 5v14m7-7H5"></path></svg>Download
+        </button>
+      </div>`;
+    }
+    attachmentsHtml += '</div>';
+  }
+
+  postCard.innerHTML = `
+  <div class="post-header">
+    <div class="author-avatar-container">
+      ${authorPhotoURL ? `<img src="${authorPhotoURL}" alt="${authorName}" class="author-avatar-img">` :
+      `<div class="author-initials">${authorName.split(' ').map(n=>n[0]).join('').toUpperCase()}</div>`}
+    </div>
+    <div class="post-info">
+      <a href="../dashboard.html?uid=${post.authorId}" class="post-author">${authorName}</a>
+      <div class="post-time">${formattedDate}</div>
+      <a href="${communityId?`../communities/community.html?id=${communityId}`:'#'}" class="post-community" style="font-size:0.85em;color:gray;">
+        ${communityName}
+      </a>
+    </div>
+  </div>
+  <div class="post-content">${post.content||''}</div>
+  ${attachmentsHtml}
+  <div class="post-actions">
+    <button class="like-btn" aria-label="Like">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.72-7.72 1.06-1.06a5.5 5.5 0 0 0 0-7.84z"/>
+      </svg>
+      <span class="post-likes-count">${post.likes||0}</span>
+    </button>
+    <button class="reply-btn" aria-label="Reply">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/>
+      </svg>Reply
+    </button>
+  </div>
+  <div class="comments-section"></div>
+  `;
+
+  // Like button
+  const likeBtn = postCard.querySelector('button.like-btn');
+  if(post.likedBy?.includes(currentUser?.uid)) likeBtn.classList.add('liked');
+  likeBtn.addEventListener('click',()=>toggleLike(doc.ref,postCard.likedBy,postCard));
+
+  // Reply button
+  const replyBtn = postCard.querySelector('button.reply-btn');
+  replyBtn.addEventListener('click',()=>{
+    if(communityId) window.location.href = `../community/comments.html?communityId=${communityId}&postId=${doc.id}`;
+    else alert('Error: community not found.');
+  });
+
+  // Download button
+  const downloadBtn = postCard.querySelector('.download-btn');
+  if(downloadBtn){
+    downloadBtn.addEventListener('click', async e=>{
+      e.preventDefault();
+      const url = downloadBtn.dataset.url;
+      const filename = downloadBtn.dataset.filename || 'file';
+      try{
+        const resp = await fetch(url);
+        if(!resp.ok) throw new Error('Network error');
+        const blob = await resp.blob();
+        const blobUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        window.URL.revokeObjectURL(blobUrl);
+      } catch(err){ console.error(err); alert('Download failed'); }
+    });
+  }
+
+  return postCard;
+}
+
+// Load posts
+async function loadPosts(){
+  try{
+    loadingIndicator.style.display='flex';
+    emptyState.style.display='none';
+    errorContainer.style.display='none';
+    feedContainer.innerHTML='';
+
+    const querySnapshot = await db.collectionGroup('posts')
+      .orderBy('createdAt','desc')
+      .orderBy('likes','desc')
+      .get();
+
+    loadingIndicator.style.display='none';
+    if(querySnapshot.empty){ emptyState.style.display='block'; return; }
+
+    for(const doc of querySnapshot.docs){
+      const postEl = await createPostElement(doc);
+      feedContainer.appendChild(postEl);
+    }
+  }catch(error){
+    loadingIndicator.style.display='none';
+    errorContainer.style.display='block';
+    errorContainer.textContent='Error loading posts: '+error.message;
+    console.error(error);
+  }
+}
+
+// Auth state
+auth.onAuthStateChanged(user=>{
+  currentUser = user;
+  if(user) loadPosts();
+  else{
+    loadingIndicator.style.display='none';
+    errorContainer.style.display='block';
+    errorContainer.textContent='Please log in to view posts.';
+  }
+});
+</script>
+</body>
+</html>

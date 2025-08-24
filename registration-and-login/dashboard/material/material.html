@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Materials - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #334155;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 180px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            font-weight: 500;
+            color: #666;
+            padding-bottom: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+
+       
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #3b82f6 100%, #8b5cf6 0%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Controls Section */
+        .controls-section {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .file-search {
+            position: relative;
+            width: 320px;
+        }
+
+        .file-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .file-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .file-search .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 18px;
+            height: 18px;
+        }
+
+        .add-file-btn {
+            background: linear-gradient(135deg, #3b82f6 100%, #059669 0%);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-file-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .add-file-btn:hover::before {
+            left: 100%;
+        }
+
+        .add-file-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.3);
+        }
+
+        .add-file-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Files Grid */
+        .files-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .file-card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .file-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .file-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .file-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 25px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .file-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .file-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .file-icon.pdf {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+        }
+
+        .file-icon.doc {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        }
+
+        .file-icon.ppt {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+        }
+
+        .file-icon.img {
+            background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
+        }
+
+        .file-icon.other {
+            background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+        }
+
+        .file-info {
+            flex: 1;
+        }
+
+        .file-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+            word-break: break-word;
+        }
+
+        .file-type {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #475569;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .file-description {
+            color: #64748b;
+            margin: 16px 0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        .file-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 16px 0;
+            padding: 12px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 8px;
+            font-size: 12px;
+            color: #64748b;
+        }
+
+        .file-size {
+            font-weight: 600;
+        }
+
+        .file-date {
+            font-weight: 500;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .file-action-btn {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .file-action-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .file-action-btn.download {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border-color: transparent;
+        }
+
+        .file-action-btn.download:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Upload Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .modal-subtitle {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .upload-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        .form-input {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .file-drop-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-drop-zone:hover,
+        .file-drop-zone.dragover {
+            border-color: #3b82f6;
+            background-color: #f8fafc;
+        }
+
+        .file-drop-zone svg {
+            width: 48px;
+            height: 48px;
+            color: #9ca3af;
+            margin-bottom: 16px;
+        }
+
+        .drop-zone-text {
+            color: #64748b;
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .drop-zone-subtext {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .modal-btn.cancel {
+            background: white;
+            border: 1px solid #d1d5db;
+            color: #64748b;
+        }
+
+        .modal-btn.cancel:hover {
+            border-color: #9ca3af;
+            color: #374151;
+        }
+
+        .modal-btn.upload {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border: none;
+            color: white;
+        }
+
+        .modal-btn.upload:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .modal-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Loading, Error, Empty States */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #64748b;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            color: #cbd5e1;
+            margin: 0 auto 24px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .empty-state-description {
+            color: #64748b;
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .error-container {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #fecaca;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .error-title {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .nav {
+                justify-content: center;
+                gap: 24px;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .file-search {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .files-container {
+                grid-template-columns: 1fr;
+            }
+
+            .modal {
+                padding: 24px;
+                margin: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .file-card {
+                padding: 20px;
+            }
+
+            .file-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .file-actions {
+                justify-content: center;
+            }
+        }
+        .header-search-results .header-user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.header-search-results .header-user-item:hover {
+    background: #f1f5f9;
+}
+
+.header-search-results .header-user-avatar img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header-search-results .header-user-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-search-results .header-user-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.header-search-results .header-user-email {
+    font-size: 12px;
+    color: #64748b;
+}
+.header-user-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+
+        
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-container">
+            <a href="#" class="logo">EduConnect</a>
+            
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="../homefeed/homefeed.html" class="nav-link">Home Feed</a>
+                <a href="../materials/materials.html" class="nav-link">Lesson Categories</a>
+                <a href="../communities/communities.html" class="nav-link">Communities</a>
+                <a href="../dashboard.html" class="nav-link active">Dashboard</a>
+            </nav>
+            
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <div class="page-header">
+            <h1 class="page-title">Study Materials</h1>
+            <p class="page-subtitle">Upload, organize, and share your study files with the communities</p>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="file-search">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" class="file-search-input" placeholder="Search study materials..." aria-label="Search study materials" id="fileSearchInput">
+            </div>
+            
+            <button class="add-file-btn" id="addFileBtn" aria-label="Add new study material">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                Add Study Material
+            </button>
+        </div>
+
+        <!-- Error Container -->
+        <div id="errorContainer" class="error-container" style="display: none;" role="alert">
+            <div class="error-title">Error loading study materials</div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingContainer" class="loading-container">
+            <div class="spinner" aria-hidden="true"></div>
+            <div class="loading-text">Loading study materials...</div>
+        </div>
+
+        <!-- Files Container -->
+        <div id="filesContainer" class="files-container" style="display: none;">
+            <!-- Files will be populated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+            </svg>
+            <h3 class="empty-state-title">No study materials found</h3>
+            <p class="empty-state-description">Start building your study library by uploading your first material</p>
+        </div>
+    </main>
+
+    <!-- Upload Modal -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Upload Study Material</h2>
+                <p class="modal-subtitle">Share your notes, assignments, and resources with the community</p>
+            </div>
+            
+            <form class="upload-form" id="uploadForm">
+                <div class="form-group">
+                    <label class="form-label" for="fileName">File Name</label>
+                    <input type="text" class="form-input" id="fileName" placeholder="Enter a descriptive name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fileDescription">Description</label>
+                    <textarea class="form-input form-textarea" id="fileDescription" placeholder="Describe what this material covers..." required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="fileSubject">Subject</label>
+                    <input type="text" class="form-input" id="fileSubject" placeholder="e.g., Mathematics, Physics, Chemistry" required>
+                </div>
+                
+               <div class="form-group">
+    <label class="form-label">File Upload</label>
+    <div class="file-drop-zone" id="fileDropZone">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
+        </svg>
+        <div class="drop-zone-text">Drop your file here or click to browse</div>
+        <div class="drop-zone-subtext">Supports PDF, DOC, PPT, images and more</div>
+        <input type="file" id="fileInput" style="display: none;" 
+               accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.txt,.zip,.rar">
+        <progress id="uploadProgress" value="0" max="100" style="display:none;width:100%;margin-top:10px;"></progress>
+        <div id="uploadStatus" style="margin-top:5px;font-size:14px;"></div>
+    </div>
+</div>
+                <div class="modal-actions">
+                    <button type="button" class="modal-btn cancel" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="modal-btn upload" id="uploadBtn" disabled>Upload Material</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { 
+    getFirestore, doc, collection, getDocs, addDoc, serverTimestamp,
+    query, orderBy, startAt, endAt, limit
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// ----------------- Firebase -----------------
+const firebaseConfig = {
+  apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+  authDomain: "educonnect-958e2.firebaseapp.com",
+  projectId: "educonnect-958e2"
+};
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ----------------- Cloudinary -----------------
+const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/dpbobj2j2/upload";
+const UPLOAD_PRESET = "unsigned-presnt";
+
+// ----------------- DOM elements -----------------
+const els = {
+    loading: document.getElementById('loadingContainer'),
+    files: document.getElementById('filesContainer'),
+    empty: document.getElementById('emptyState'),
+    error: document.getElementById('errorContainer'),
+    errorMsg: document.getElementById('errorMessage'),
+    search: document.getElementById('fileSearchInput'),
+    addBtn: document.getElementById('addFileBtn'),
+    modal: document.getElementById('uploadModal'),
+    form: document.getElementById('uploadForm'),
+    cancel: document.getElementById('cancelBtn'),
+    drop: document.getElementById('fileDropZone'),
+    input: document.getElementById('fileInput'),
+    uploadBtn: document.getElementById('uploadBtn'),
+    selectedFileName: document.getElementById('selectedFileName'),
+    userSearchInput: document.getElementById('userSearchInput'),
+    userSearchResults: document.getElementById('userSearchResults')
+};
+
+// ----------------- State -----------------
+let allFiles = [];
+let searchTerm = '';
+let selectedFile = null;
+
+// ----------------- URL params -----------------
+const categoryId = new URLSearchParams(window.location.search).get('categoryId');
+if (!categoryId) {
+    showError("Category ID not specified!");
+    throw new Error("Category ID not specified");
+}
+
+// ----------------- UI helpers -----------------
+function showLoading() {
+    els.loading.style.display = 'flex';
+    els.files.style.display = 'none';
+    els.empty.style.display = 'none';
+    els.error.style.display = 'none';
+}
+function showError(message) {
+    els.loading.style.display = 'none';
+    els.files.style.display = 'none';
+    els.empty.style.display = 'none';
+    els.error.style.display = 'block';
+    els.errorMsg.textContent = message;
+}
+function showEmpty() {
+    els.loading.style.display = 'none';
+    els.files.style.display = 'none';
+    els.empty.style.display = 'block';
+    els.error.style.display = 'none';
+}
+function showFiles() {
+    els.loading.style.display = 'none';
+    els.files.style.display = 'grid';
+    els.empty.style.display = 'none';
+    els.error.style.display = 'none';
+}
+
+// ----------------- Utils -----------------
+const getFileIcon = name => {
+    const ext = (name?.split('.').pop() || '').toLowerCase();
+    const icons = { pdf:'📄', doc:'📝', docx:'📝', ppt:'📊', pptx:'📊', jpg:'🖼️', jpeg:'🖼️', png:'🖼️', gif:'🖼️', txt:'📄', zip:'📦', rar:'📦' };
+    return icons[ext] || '📄';
+};
+const getFileIconClass = name => {
+    const ext = (name?.split('.').pop() || '').toLowerCase();
+    if(['pdf','txt'].includes(ext)) return 'pdf';
+    if(['doc','docx'].includes(ext)) return 'doc';
+    if(['ppt','pptx'].includes(ext)) return 'ppt';
+    if(['jpg','jpeg','png','gif'].includes(ext)) return 'img';
+    return 'other';
+};
+const formatFileSize = bytes => {
+    if(!bytes) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes','KB','MB','GB'];
+    const i = Math.min(sizes.length - 1, Math.floor(Math.log(bytes)/Math.log(k)));
+    return (bytes/Math.pow(k,i)).toFixed(2)+' '+sizes[i];
+};
+const formatDate = ts => {
+    if(!ts) return 'Unknown';
+    const date = ts.toDate ? ts.toDate() : new Date(ts);
+    return date.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});
+};
+const escapeHtml = txt => {
+    const div = document.createElement('div');
+    div.textContent = txt ?? '';
+    return div.innerHTML;
+};
+
+// ----------------- Render files -----------------
+function renderFiles(files){
+    if(!files?.length) return showEmpty();
+    showFiles();
+    els.files.innerHTML = files.map(file => `
+        <article class="file-card">
+            <div class="file-header">
+                <div class="file-icon ${getFileIconClass(file.fileName)}">${getFileIcon(file.fileName)}</div>
+                <div class="file-info">
+                    <h2 class="file-name">${escapeHtml(file.name)}</h2>
+                    <span class="file-type">${escapeHtml(file.subject || 'General')}</span>
+                </div>
+            </div>
+            <p class="file-description">${escapeHtml(file.description)}</p>
+            <div class="file-meta">
+                <span class="file-size">${formatFileSize(file.fileSize || 0)}</span>
+                <span class="file-date">${formatDate(file.uploadedAt)}</span>
+            </div>
+            <div class="file-actions">
+                <button class="file-action-btn" onclick="viewFile('${file.id}')">View</button>
+                <button class="file-action-btn download" onclick="downloadFile('${escapeHtml(file.downloadURL)}','${escapeHtml(file.fileName)}')">Download</button>
+            </div>
+        </article>
+    `).join('');
+}
+
+// ----------------- Search filter for files -----------------
+function filterFiles() {
+    const s = searchTerm.trim().toLowerCase();
+    renderFiles(s ? allFiles.filter(f => 
+        f.name?.toLowerCase().includes(s) ||
+        f.description?.toLowerCase().includes(s) ||
+        f.subject?.toLowerCase().includes(s)
+    ) : allFiles);
+}
+
+// ----------------- Load files -----------------
+async function loadFiles(){
+    showLoading();
+    try{
+        const snap = await getDocs(collection(doc(db, 'lesson-categories', categoryId), 'study-materials'));
+        allFiles = snap.docs.map(d=>({id:d.id, ...d.data(), uploadedAt: d.data().uploadedAt || new Date()}));
+        filterFiles();
+    }catch(e){
+        console.error(e);
+        showError('Failed to load files.');
+    }
+}
+
+// ----------------- Upload file -----------------
+async function uploadFile(e){
+    e.preventDefault();
+    if(!selectedFile) return alert('Select a file!');
+    
+    els.uploadBtn.disabled = true;
+    const originalText = els.uploadBtn.textContent;
+    els.uploadBtn.textContent = 'Uploading...';
+    try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('upload_preset', UPLOAD_PRESET);
+
+        const res = await fetch(CLOUDINARY_URL, { method:'POST', body: formData });
+        if (!res.ok) throw new Error(`Cloudinary error: ${res.status} ${await res.text()}`);
+        const fileData = await res.json();
+        if (!fileData.secure_url) throw new Error('No secure_url returned');
+
+        await addDoc(collection(doc(db, 'lesson-categories', categoryId), 'study-materials'), {
+            name: document.getElementById('fileName').value,
+            description: document.getElementById('fileDescription').value,
+            subject: document.getElementById('fileSubject').value,
+            fileName: selectedFile.name,
+            fileSize: selectedFile.size,
+            fileType: selectedFile.type || '',
+            downloadURL: fileData.secure_url,
+            uploadedAt: serverTimestamp()
+        });
+
+        els.uploadBtn.textContent = 'Uploaded ✓';
+        els.form.reset();
+        selectedFile = null;
+        updateSelectedFileDisplay();
+
+        setTimeout(()=>{ 
+            els.modal.classList.remove('active'); 
+            els.uploadBtn.textContent = originalText;
+            els.uploadBtn.disabled = false;
+        }, 400);
+        loadFiles();
+    } catch(err){
+        console.error(err);
+        alert(err.message || 'Upload failed');
+        els.uploadBtn.disabled = false;
+        els.uploadBtn.textContent = originalText;
+    }
+}
+
+// ----------------- Selected file UI -----------------
+function updateSelectedFileDisplay() {
+    if (!els.selectedFileName) return;
+    els.selectedFileName.textContent = selectedFile 
+        ? `${selectedFile.name} (${formatFileSize(selectedFile.size)})` 
+        : 'No file selected';
+}
+
+// ----------------- Search users -----------------
+async function searchUsers(queryText) {
+    els.userSearchResults.innerHTML = '';
+    if (!queryText.trim()) {
+        els.userSearchResults.style.display = 'none';
+        return;
+    }
+    try {
+        const usersRef = collection(db, 'users');
+        const qSnap = await getDocs(
+            query(
+                usersRef,
+                orderBy('displayName'),
+                startAt(queryText),
+                endAt(queryText + '\uf8ff'),
+                limit(5)
+            )
+        );
+
+        if (qSnap.empty) {
+            els.userSearchResults.innerHTML = `<div style="padding:10px; color:#64748b;">No users found</div>`;
+            els.userSearchResults.style.display = 'block';
+            return;
+        }
+
+        qSnap.forEach(docSnap => {
+            const user = docSnap.data();
+            const userItem = document.createElement('div');
+            userItem.className = 'header-user-item';
+            let avatarHTML = '';
+            if (user.photoURL) {
+                avatarHTML = `
+                    <div class="header-user-avatar">
+                        <img src="${user.photoURL}" alt="${user.displayName || ''}">
+                    </div>`;
+            } else {
+                const initials = (user.displayName || '?')[0].toUpperCase();
+                avatarHTML = `<div class="header-user-initials">${initials}</div>`;
+            }
+            userItem.innerHTML = `
+                ${avatarHTML}
+                <div class="header-user-info">
+                    <div class="header-user-name">${user.displayName || 'No Name'}</div>
+                    <div class="header-user-email">${user.email || ''}</div>
+                </div>
+            `;
+            userItem.addEventListener('click', () => {
+                window.location.href = `/dashboard/profile.html?uid=${docSnap.id}`;
+            });
+            els.userSearchResults.appendChild(userItem);
+        });
+        els.userSearchResults.style.display = 'block';
+    } catch (err) {
+        console.error('User search error:', err);
+    }
+}
+
+// ----------------- Event bindings -----------------
+els.search?.addEventListener('input', e => { searchTerm = e.target.value; filterFiles(); });
+els.userSearchInput?.addEventListener('input', e => searchUsers(e.target.value.trim().toLowerCase()));
+els.addBtn?.addEventListener('click',()=> els.modal.classList.add('active'));
+els.cancel?.addEventListener('click',()=>{ els.modal.classList.remove('active'); els.form.reset(); selectedFile=null; els.uploadBtn.disabled=true; updateSelectedFileDisplay(); });
+els.drop?.addEventListener('click',()=>els.input.click());
+els.drop?.addEventListener('dragover', e=>{ e.preventDefault(); els.drop.classList.add('dragover'); });
+els.drop?.addEventListener('dragleave', ()=>els.drop.classList.remove('dragover'));
+els.drop?.addEventListener('drop', e=>{ e.preventDefault(); els.drop.classList.remove('dragover'); selectedFile = e.dataTransfer.files?.[0] || null; els.uploadBtn.disabled = !selectedFile; updateSelectedFileDisplay(); });
+els.input?.addEventListener('change', e=>{ selectedFile = e.target.files?.[0] || null; els.uploadBtn.disabled = !selectedFile; updateSelectedFileDisplay(); });
+els.form?.addEventListener('submit', uploadFile);
+
+// ----------------- Actions -----------------
+window.viewFile = id => {
+    const file = allFiles.find(f=>f.id===id);
+    if(file?.downloadURL) window.open(file.downloadURL,'_blank');
+};
+window.downloadFile = (url,name) => {
+    const a=document.createElement('a');
+    a.href=url; a.download=name || '';
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+};
+
+// ----------------- Init -----------------
+document.addEventListener('DOMContentLoaded', ()=>{ loadFiles(); updateSelectedFileDisplay(); });
+</script>

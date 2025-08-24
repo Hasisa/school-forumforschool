@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="style2.css" />
+  <style>
+    /* Твои стили + мелкие улучшения */
+    .hidden {
+      display: none;
+    }
+    .loading-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: 'Inter', sans-serif;
+      font-size: 1.2rem;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 5px solid #ccc;
+      border-top-color: #333;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-bottom: 12px;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .avatar-container {
+      position: relative;
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #ddd;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 3rem;
+      color: #555;
+    }
+    .avatar {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .avatar-fallback {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #aaa;
+      user-select: none;
+    }
+    .btn {
+      padding: 8px 16px;
+      font-size: 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background-color: #4f46e5;
+      color: white;
+    }
+    .save-status {
+      margin-top: 8px;
+      font-weight: 600;
+    }
+    .save-status.success {
+      color: green;
+    }
+    .save-status.error {
+      color: red;
+    }
+    #search-results {
+      margin-top: 10px;
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fafafa;
+    }
+    #search-results div {
+      padding: 8px;
+      border-bottom: 1px solid #ddd;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #search-results div:hover {
+      background-color: #e0e0ff;
+    }
+    .search-avatar-fallback {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background-color: #aaa;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 1.1rem;
+      user-select: none;
+      flex-shrink: 0;
+    }
+    .search-avatar-img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen" class="loading-screen">
+    <div class="spinner"></div>
+    <p>Loading your dashboard...</p>
+  </div>
+
+  <!-- Dashboard -->
+  <div id="dashboard" class="dashboard hidden">
+    <header class="header">
+      <div class="header-content">
+        <div class="logo"><h2>EduConnect</h2></div>
+        <nav class="nav">
+          <a href="./homefeed/homefeed.html" class="nav-link">Home Feed</a>
+          <a href="./materials/materials.html" class="nav-link">Lesson Categories</a>
+          <a href="./communities/communities.html" class="nav-link">Communities</a>
+          <a href="dashboard.html" class="nav-link active">Dashboard</a>
+          <a href="./tools/tools.html" class ="nav-link">Tools</a>
+        </nav>
+        <div class="header-actions">
+          <div class="search-container">
+            <input type="text" placeholder="Search users by name..." class="search-input" />
+            <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <circle cx="11" cy="11" r="8"></circle>
+              <path d="m21 21-4.35-4.35"></path>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="search-results"></div>
+
+    <main class="main-content">
+      <div class="container">
+        <div class="profile-section">
+          <div class="profile-card">
+            <div class="profile-header">
+              <h1>Your Profile</h1>
+              <div id="save-status" class="save-status hidden"></div>
+            </div>
+            <div class="profile-content">
+              <div class="avatar-section">
+                <div class="avatar-container">
+                  <img id="user-avatar" class="avatar" src="" alt="User Avatar" style="display:none;" />
+                  <div id="avatar-fallback" class="avatar-fallback">
+                    <span id="avatar-initials"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="profile-info">
+                <div class="info-group">
+                  <label>Full Name</label>
+                  <div class="full-name">
+                    <span id="user-fullname">Loading...</span>
+                  </div>
+                </div>
+                <div class="info-group">
+                  <label>Email</label>
+                  <div class="email-display">
+                    <span id="user-email">Loading...</span>
+                  </div>
+                </div>
+                <div class="info-group">
+                  <label>Description</label>
+                  <div class="description-container">
+                    <textarea
+                      id="user-description"
+                      class="description-input"
+                      placeholder="Tell us about yourself..."
+                      rows="4"
+                    ></textarea>
+                    <button id="save-description-btn" class="btn btn-primary save-btn">
+                      Save Description
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Firebase SDK (compat версия) -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+  <script>
+  // === Инициализация Firebase ===
+  const firebaseConfig = {
+    apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+    authDomain: "educonnect-958e2.firebaseapp.com",
+    projectId: "educonnect-958e2",
+    storageBucket: "educonnect-958e2.firebasestorage.com",
+    messagingSenderId: "1044066506835",
+    appId: "1:1044066506835:web:ad2866ebfe60aa90978ea6",
+  };
+
+  firebase.initializeApp(firebaseConfig);
+
+  const auth = firebase.auth();
+  const db = firebase.firestore();
+
+  // === DOM элементы ===
+  const loadingScreen = document.getElementById('loading-screen');
+  const dashboard = document.getElementById('dashboard');
+
+  const userFullName = document.getElementById('user-fullname');
+  const userEmail = document.getElementById('user-email');
+  const userAvatarImg = document.getElementById('user-avatar');
+  const avatarFallback = document.getElementById('avatar-fallback');
+  const avatarInitials = document.getElementById('avatar-initials');
+
+  const descriptionInput = document.getElementById('user-description');
+  const saveBtn = document.getElementById('save-description-btn');
+  const saveStatus = document.getElementById('save-status');
+
+  const searchInput = document.querySelector('.search-input');
+  const searchResults = document.getElementById('search-results');
+
+  let currentUser = null;
+  let searchTimeout = null;
+
+  // === Получение uid из URL ===
+  function getUidFromUrl() {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('uid');
+  }
+
+  // === Получение инициалов для fallback аватара ===
+  function getInitials(name) {
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+
+  // === Загрузка данных пользователя ===
+  async function loadUserData(uidFromUrl) {
+    if (!currentUser) return;
+
+    const uid = uidFromUrl || currentUser.uid;
+
+    // Сброс интерфейса
+    userEmail.textContent = '';
+    userFullName.textContent = 'Loading...';
+    descriptionInput.value = '';
+    userAvatarImg.style.display = 'none';
+    avatarFallback.style.display = 'flex';
+    avatarInitials.textContent = '';
+    saveStatus.classList.add('hidden');
+    saveStatus.textContent = '';
+
+    try {
+      const docSnap = await db.collection('users').doc(uid).get();
+      if (!docSnap.exists) {
+        userFullName.textContent = "User not found";
+        descriptionInput.disabled = true;
+        saveBtn.style.display = 'none';
+        return;
+      }
+
+      const data = docSnap.data();
+      const fullName = (data.firstName && data.lastName) ? `${data.firstName} ${data.lastName}` : (currentUser.displayName || "No Name");
+      userFullName.textContent = fullName;
+      descriptionInput.value = data.description || "";
+
+      if (data.avatarUrl) {
+        userAvatarImg.src = data.avatarUrl;
+        userAvatarImg.style.display = 'block';
+        avatarFallback.style.display = 'none';
+      } else {
+        userAvatarImg.style.display = 'none';
+        avatarFallback.style.display = 'flex';
+        avatarInitials.textContent = getInitials(fullName);
+      }
+
+      userEmail.textContent = data.email || 'No Email';
+
+      // Если это чужой профиль - блокируем редактирование
+      if (uid !== currentUser.uid) {
+        descriptionInput.disabled = true;
+        saveBtn.style.display = 'none';
+      } else {
+        descriptionInput.disabled = false;
+        saveBtn.style.display = 'inline-block';
+      }
+
+      loadingScreen.style.display = 'none';
+      dashboard.classList.remove('hidden');
+
+    } catch (error) {
+      console.error("Error loading user data:", error);
+      userFullName.textContent = "Error loading user";
+      descriptionInput.disabled = true;
+      saveBtn.style.display = 'none';
+    }
+  }
+
+  // === Сохранение описания только для своего профиля ===
+  saveBtn.addEventListener('click', () => {
+    const uidFromUrl = getUidFromUrl();
+    if (!currentUser || uidFromUrl !== currentUser.uid) {
+      saveStatus.textContent = "You cannot edit this profile";
+      saveStatus.className = "save-status error";
+      saveStatus.classList.remove('hidden');
+      return;
+    }
+
+    const newDescription = descriptionInput.value.trim();
+
+    saveStatus.textContent = "Saving...";
+    saveStatus.className = "save-status";
+    saveStatus.classList.remove('hidden');
+
+    db.collection('users').doc(currentUser.uid).set({
+      description: newDescription
+    }, { merge: true })
+    .then(() => {
+      saveStatus.textContent = "Description saved successfully!";
+      saveStatus.className = "save-status success";
+    })
+    .catch((error) => {
+      saveStatus.textContent = "Error saving description: " + error.message;
+      saveStatus.className = "save-status error";
+      console.error("Error saving description:", error);
+    });
+  });
+
+  // === Поиск пользователей с дебаунсом ===
+  async function searchUsersByName(name) {
+    if (!name) {
+      searchResults.innerHTML = '';
+      return;
+    }
+
+    try {
+      const usersRef = db.collection('users');
+      const queryRef = usersRef
+        .orderBy('firstName')
+        .startAt(name)
+        .endAt(name + '\uf8ff')
+        .limit(10);
+
+      const snapshot = await queryRef.get();
+
+      if (snapshot.empty) {
+        searchResults.innerHTML = '<div style="padding:8px;">No users found</div>';
+        return;
+      }
+
+      let html = '';
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        const fullName = `${data.firstName || ''} ${data.lastName || ''}`.trim() || 'Unnamed User';
+        const email = data.email || '';
+        const avatarUrl = data.avatarUrl || '';
+
+        if (avatarUrl) {
+          html += `
+            <div data-uid="${doc.id}">
+              <img src="${avatarUrl}" alt="Avatar" class="search-avatar-img" />
+              <div>
+                <strong>${fullName}</strong><br />
+                <small>${email}</small>
+              </div>
+            </div>
+          `;
+        } else {
+          const initials = getInitials(fullName);
+          html += `
+            <div data-uid="${doc.id}">
+              <div class="search-avatar-fallback">${initials}</div>
+              <div>
+                <strong>${fullName}</strong><br />
+                <small>${email}</small>
+              </div>
+            </div>
+          `;
+        }
+      });
+
+      searchResults.innerHTML = html;
+
+      searchResults.querySelectorAll('div[data-uid]').forEach(item => {
+        item.addEventListener('click', () => {
+          const uid = item.getAttribute('data-uid');
+          window.location.href = `dashboard.html?uid=${uid}`;
+        });
+      });
+
+    } catch (error) {
+      console.error('Search error:', error);
+      searchResults.innerHTML = '<div style="padding:8px;">Error searching users</div>';
+    }
+  }
+
+  // === Обработчик ввода поиска с дебаунсом ===
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim();
+    if (searchTimeout) clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      searchUsersByName(query);
+    }, 300);
+  });
+
+  // === Проверка авторизации и загрузка данных ===
+  auth.onAuthStateChanged(user => {
+    if (user) {
+      currentUser = user;
+      const uidFromUrl = getUidFromUrl();
+      loadUserData(uidFromUrl);
+    } else {
+      loadingScreen.innerHTML = '<p>Please log in to view the dashboard</p>';
+    }
+  });
+</script>

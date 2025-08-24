@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Post Viewer</title>
+  <link rel="stylesheet" href="comments.css" />
+
+  <!-- FontAwesome CSS для иконок -->
+  <link
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    rel="stylesheet"
+  />
+
+  <!-- Firebase SDK (compat версии) через CDN -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <style>
+    .post-actions, .comment-actions {
+      display: flex;
+      gap: 16px;
+      margin-top: 16px;
+    }
+
+    .post-action {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: 2px solid #d1d5db;
+      cursor: pointer;
+      color: #6b7280;
+      font-size: 16px;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.15s ease;
+      user-select: none;
+      font-weight: 500;
+    }
+
+    .post-action i {
+      font-size: 18px;
+      vertical-align: middle;
+      color: inherit;
+      transition: transform 0.2s ease;
+    }
+
+    .post-action:hover {
+      background-color: #f3f4f6;
+      color: #2563eb;
+      transform: translateY(-1px);
+    }
+
+    .post-action.liked {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    .post-action.liked:hover {
+      background-color: #fee2e2;
+      color: #b91c1c;
+    }
+
+    .comment {
+      background: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 16px;
+      transition: all 0.15s ease;
+    }
+
+    .comment:hover {
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+
+    .comment-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .comment-author {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .comment-author .avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #f3f4f6;
+    }
+
+    .comment-author-name {
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .comment-date {
+      font-size: 12px;
+      color: #9ca3af;
+    }
+
+    .comment-content {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: #374151;
+    }
+
+    /* Скрыть модалку по умолчанию */
+    .modal.hidden {
+      display: none;
+    }
+
+    /* --- Новый блок: пост attachments --- */
+    .post-attachments {
+      margin: 12px 0;
+      padding: 8px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+    }
+
+    .post-attachments a {
+      display: block;
+      color: #3b82f6;
+      text-decoration: none;
+      margin-bottom: 4px;
+    }
+
+    .post-attachments a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1>Community Post</h1>
+    </header>
+
+    <main class="main-content">
+      <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Loading post...</p>
+      </div>
+
+      <div id="error" class="error hidden">
+        <p id="error-message"></p>
+        <button id="retry-btn" class="retry-btn">Retry</button>
+      </div>
+
+      <article id="post" class="post hidden">
+        <div class="post-header">
+          <div class="post-author">
+            <img id="post-author-avatar" class="avatar" alt="Author avatar" src="" />
+            <div class="author-info">
+              <h3 id="post-author-name" class="author-name">Loading...</h3>
+              <time id="post-date" class="post-date">Loading...</time>
+            </div>
+          </div>
+        </div>
+
+        <div class="post-content">
+          <p id="post-text">Loading...</p>
+        </div>
+
+        <!-- Новый блок: attachments поста -->
+        <div id="post-attachments" class="post-attachments"></div>
+
+        <div class="post-actions">
+          <button id="post-like-btn" class="post-action" data-action="like">
+            <i class="far fa-heart"></i>
+            <span id="post-like-count">0</span>
+          </button>
+
+          <button id="post-reply-btn" class="post-action" data-action="reply">
+            <i class="far fa-comment"></i>
+            <span>Reply</span>
+          </button>
+        </div>
+      </article>
+
+      <section class="comments-section">
+        <h3 class="comments-title">Comments</h3>
+
+        <div id="comment-input-section" class="comment-input-section">
+          <textarea id="comment-input" class="comment-input" placeholder="Write a comment..." rows="3"></textarea>
+          <div class="comment-input-actions">
+            <button id="post-comment-btn" class="post-comment-btn">Post Comment</button>
+          </div>
+        </div>
+
+        <div id="comments-container" class="comments-container">
+          <!-- Здесь будут динамически загружаться комментарии -->
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div id="reply-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="reply-modal-title">Reply to Comment</h3>
+        <button id="close-reply-modal" class="close-btn">&times;</button>
+      </div>
+      <div class="modal-body">
+        <textarea id="reply-input" class="reply-input" placeholder="Write your reply..." rows="3"></textarea>
+        <div class="modal-actions">
+          <button id="cancel-reply" class="cancel-btn">Cancel</button>
+          <button id="submit-reply" class="submit-btn">Post Reply</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="comments.js"></script>
+</body>
+</html>

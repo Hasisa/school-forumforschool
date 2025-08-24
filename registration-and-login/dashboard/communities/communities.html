@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Communities - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        /* Сброс и базовые стили */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Хедер */
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            font-weight: 500;
+            color: #666;
+            padding-bottom: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+
+        .search-container {
+            position: relative;
+            width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: -1px;
+            border-color: #3b82f6;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Основной контент */
+        .main-content {
+            max-width: 1200px;
+            margin: 24px auto 48px;
+            padding: 0 24px;
+            flex-grow: 1;
+        }
+
+        .page-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 32px;
+        }
+
+        /* Фильтры */
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 24px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e2e8f0;
+            background-color: white;
+            color: #64748b;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+        }
+
+        .filter-btn.active {
+            background-color: #3b82f6;
+            border-color: #3b82f6;
+            color: white;
+        }
+
+        .community-search {
+            position: relative;
+            width: 300px;
+            margin-left: auto;
+        }
+
+        .community-search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fff;
+        }
+
+        .community-search-input:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: -1px;
+            border-color: #3b82f6;
+        }
+
+        .community-search .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Список сообществ */
+        .communities-container {
+            display: grid;
+            gap: 16px;
+        }
+
+        .community-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
+        }
+
+        .community-card:hover {
+            box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+
+        .community-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .community-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .community-type {
+            background-color: #f1f5f9;
+            color: #475569;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .community-type.grade-10 {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .community-type.grade-11 {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+
+        .community-type.general {
+            background-color: #f0fdf4;
+            color: #166534;
+        }
+
+        .community-description {
+            color: #64748b;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+
+        .community-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .community-members {
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .community-join-btn {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .community-join-btn:hover:not(:disabled) {
+            background-color: #2563eb;
+        }
+
+        .community-join-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* Состояния загрузки, пустоты и ошибок */
+        .loading-container,
+        .empty-state,
+        .error-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 20px;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 16px;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-text,
+        .empty-state-title,
+        .error-title {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-title,
+        .error-title {
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 20px;
+        }
+
+        .empty-state-description,
+        .error-message {
+            color: #64748b;
+            font-size: 14px;
+            max-width: 320px;
+        }
+
+        .empty-state-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 16px;
+            stroke: #94a3b8;
+        }
+   /* Контейнер результатов поиска */
+/* Результаты поиска пользователей в шапке */
+.header-search-results {
+    display: none;
+    width: 100%;
+    max-width: 1200px;
+    margin: 16px auto 0;
+    background-color: #fff;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+/* Одна карточка пользователя */
+.header-user-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.header-user-item:hover {
+    background-color: #f0f4ff;
+}
+
+/* Аватар */
+.header-user-avatar img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* Информация о пользователе */
+.header-user-info {
+    display: flex;
+    flex-direction: row; /* горизонтально */
+    align-items: center;
+    gap: 16px; /* расстояние между именем и email */
+    flex: 1;
+    overflow: hidden;
+    font-family: 'Inter', sans-serif; 
+}
+
+.header-user-name {
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block; /* важно */
+    flex-shrink: 0; /* не сжимается */
+}
+
+.header-user-email {
+    font-size: 12px;
+    color: #6B7280;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block; /* важно */
+}
+
+
+
+        /* Адаптив */
+        @media (min-width: 768px) {
+            .communities-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .communities-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-container">
+            <a href="#" class="logo">EduConnect</a>
+
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="../homefeed/homefeed.html" class="nav-link">Home Feed</a>
+                <a href="../materials/materials.html" class="nav-link">Lesson Categories</a>
+                <a href="../communities/communities.html" class="nav-link active">Communities</a>
+                <a href="../dashboard.html" class="nav-link">Dashboard</a>
+            </nav>
+
+            <div class="search-container">
+                <svg
+                    class="search-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                </svg>
+                <input
+                    type="text"
+                    class="search-input"
+                    placeholder="Search users..."
+                    aria-label="Search users"
+                />
+            </div>
+        </div>
+    </header>
+<div class="header-search-results"></div>
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <h1 class="page-title">Communities</h1>
+        <p class="page-subtitle">
+            Connect with fellow students and join study groups
+        </p>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div
+                class="filter-buttons"
+                role="group"
+                aria-label="Community type filters"
+            >
+                <button
+                    class="filter-btn active"
+                    data-filter="all"
+                    aria-pressed="true"
+                    type="button"
+                >
+                    All Communities
+                </button>
+                <button
+                    class="filter-btn"
+                    data-filter="10th Grade"
+                    aria-pressed="false"
+                    type="button"
+                >
+                    10 graders
+                </button>
+                <button
+                    class="filter-btn"
+                    data-filter="11th Grade"
+                    aria-pressed="false"
+                    type="button"
+                >
+                    11 graders
+                </button>
+                <button
+                    class="filter-btn"
+                    data-filter="General"
+                    aria-pressed="false"
+                    type="button"
+                >
+                    General communities
+                </button>
+            </div>
+
+            <div class="community-search">
+                <svg
+                    class="search-icon"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                    ></path>
+                </svg>
+                <input
+                    type="text"
+                    class="community-search-input"
+                    placeholder="Search communities..."
+                    aria-label="Search communities"
+                    id="communitySearchInput"
+                />
+            </div>
+        </div>
+
+        <!-- Error Container -->
+        <div
+            id="errorContainer"
+            class="error-container"
+            style="display: none;"
+            role="alert"
+        >
+            <div class="error-title">Error loading communities</div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingContainer" class="loading-container">
+            <div class="spinner" aria-hidden="true"></div>
+            <div class="loading-text">Loading communities...</div>
+        </div>
+
+        <!-- Communities Container -->
+        <div
+            id="communitiesContainer"
+            class="communities-container"
+            style="display: none;"
+        >
+            <!-- Communities will be rendered here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg
+                class="empty-state-icon"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+            >
+                <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path>
+            </svg>
+            <h3 class="empty-state-title">No communities found</h3>
+            <p class="empty-state-description">
+                Try adjusting your filters or search terms
+            </p>
+        </div>
+    </main>
+<!-- Firebase SDK and main script -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import {
+    getFirestore,
+    collection,
+    getDocs,
+    query,
+    orderBy,
+    doc,
+    updateDoc,
+    arrayUnion,
+    arrayRemove,
+    increment,
+} from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+    authDomain: "educonnect-958e2.firebaseapp.com",
+    projectId: "educonnect-958e2",
+    storageBucket: "educonnect-958e2.firebasestorage.com",
+    messagingSenderId: "1044066506835",
+    appId: "1:1044066506835:web:ad2866ebfe60aa90978ea6",
+};
+
+// Инициализация
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// DOM элементы
+const loadingContainer = document.getElementById('loadingContainer');
+const communitiesContainer = document.getElementById('communitiesContainer');
+const emptyState = document.getElementById('emptyState');
+const errorContainer = document.getElementById('errorContainer');
+const errorMessage = document.getElementById('errorMessage');
+const communitySearchInput = document.getElementById('communitySearchInput');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const headerResultsContainer = document.querySelector('.header-search-results');
+const headerSearchInput = document.querySelector('.search-input');
+
+headerResultsContainer.style.backgroundColor = '#fff';
+headerResultsContainer.style.border = '1px solid #ccc';
+headerSearchInput.parentNode.style.position = 'relative';
+
+let allCommunities = [];
+let currentFilter = 'all';
+let communitySearchTerm = '';
+let allUsers = [];
+let currentUser = null;
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Генерация инициалов
+function getInitials(name) {
+    const parts = name.trim().split(' ');
+    if (parts.length === 1) return parts[0][0]?.toUpperCase() || 'U';
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+}
+
+function showLoading() {
+    loadingContainer.style.display = 'flex';
+    communitiesContainer.style.display = 'none';
+    emptyState.style.display = 'none';
+    errorContainer.style.display = 'none';
+}
+
+function showError(message) {
+    loadingContainer.style.display = 'none';
+    communitiesContainer.style.display = 'none';
+    emptyState.style.display = 'none';
+    errorContainer.style.display = 'block';
+    errorMessage.textContent = message;
+}
+
+function showEmpty() {
+    loadingContainer.style.display = 'none';
+    communitiesContainer.style.display = 'none';
+    emptyState.style.display = 'flex';
+    errorContainer.style.display = 'none';
+}
+
+function showCommunities() {
+    loadingContainer.style.display = 'none';
+    communitiesContainer.style.display = 'grid';
+    emptyState.style.display = 'none';
+    errorContainer.style.display = 'none';
+}
+
+function getTypeClass(type) {
+    switch (type) {
+        case '10th Grade': return 'grade-10';
+        case '11th Grade': return 'grade-11';
+        case 'General': return 'general';
+        default: return '';
+    }
+}
+
+function renderCommunities(communities) {
+    if (!communities || communities.length === 0) {
+        showEmpty();
+        return;
+    }
+    showCommunities();
+    communitiesContainer.innerHTML = communities.map(c => {
+        const isMember = c.members && currentUser && c.members.includes(currentUser.uid);
+        return `
+            <article class="community-card">
+                <div class="community-header">
+                    <h2 class="community-name">
+                        <a href="../community/community.html?id=${encodeURIComponent(c.id)}">
+                            ${escapeHtml(c.name)}
+                        </a>
+                    </h2>
+                    <span class="community-type ${getTypeClass(c.type)}">
+                        ${escapeHtml(c.type)}
+                    </span>
+                </div>
+                <p class="community-description">${escapeHtml(c.description)}</p>
+                <div class="community-footer">
+                    <span class="community-members">${c.membersCount || 0} members</span>
+                    <button class="community-join-btn" data-id="${c.id}">
+                        ${isMember ? 'Leave Community' : 'Join Community'}
+                    </button>
+                </div>
+            </article>
+        `;
+    }).join('');
+
+    document.querySelectorAll('.community-join-btn').forEach(btn => {
+        btn.addEventListener('click', async () => {
+            const communityId = btn.dataset.id;
+            btn.disabled = true;
+            try {
+                const communityRef = doc(db, 'communities', communityId);
+                const community = allCommunities.find(c => c.id === communityId);
+                if (!community) throw new Error('Community not found');
+
+                if (!community.members) community.members = [];
+                community.membersCount = community.membersCount || 0;
+
+                const isMember = currentUser && community.members.includes(currentUser.uid);
+                if (isMember) {
+                    await updateDoc(communityRef, {
+                        members: arrayRemove(currentUser.uid),
+                        membersCount: increment(-1)
+                    });
+                    community.members = community.members.filter(uid => uid !== currentUser.uid);
+                    community.membersCount = Math.max(0, community.membersCount - 1);
+                    btn.textContent = 'Join Community';
+                } else {
+                    await updateDoc(communityRef, {
+                        members: arrayUnion(currentUser.uid),
+                        membersCount: increment(1)
+                    });
+                    community.members.push(currentUser.uid);
+                    community.membersCount++;
+                    btn.textContent = 'Leave Community';
+                }
+                btn.previousElementSibling.textContent = `${community.membersCount} members`;
+            } catch (e) {
+                console.error(e);
+                alert('Ошибка обновления сообщества');
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    });
+}
+
+function filterCommunities() {
+    let filtered = allCommunities;
+    if (currentFilter !== 'all') filtered = filtered.filter(c => c.type === currentFilter);
+    if (communitySearchTerm.trim()) {
+        const term = communitySearchTerm.toLowerCase();
+        filtered = filtered.filter(c =>
+            c.name.toLowerCase().includes(term) ||
+            c.description.toLowerCase().includes(term)
+        );
+    }
+    renderCommunities(filtered);
+}
+
+async function fetchCommunities() {
+    showLoading();
+    try {
+        const q = query(collection(db, 'communities'), orderBy('name', 'asc'));
+        const snapshot = await getDocs(q);
+        allCommunities = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+        filterCommunities();
+    } catch (e) {
+        console.error(e);
+        showError('Не удалось загрузить сообщества');
+    }
+}
+
+async function fetchAllUsersHeader() {
+    try {
+        const q = query(collection(db, 'users'), orderBy('firstName', 'asc'));
+        const snapshot = await getDocs(q);
+        allUsers = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+    } catch (e) {
+        console.error('Ошибка загрузки пользователей для хедбара', e);
+    }
+}
+
+function filterHeaderUsers(term) {
+    if (!term || allUsers.length === 0) {
+        headerResultsContainer.style.display = 'none';
+        return;
+    }
+
+    const results = allUsers.filter(u => {
+        const fullName = ((u.firstName || '') + ' ' + (u.lastName || '')).toLowerCase();
+        return fullName.includes(term) || (u.email && u.email.toLowerCase().includes(term));
+    });
+
+    if (results.length === 0) {
+        headerResultsContainer.style.display = 'none';
+        return;
+    }
+
+    headerResultsContainer.innerHTML = results.map(u => {
+        const fullName = ((u.firstName || '') + ' ' + (u.lastName || '')).trim() || 'Unnamed User';
+        const email = u.email || '';
+        if (u.avatarUrl) {
+            return `
+            <div class="header-user-item" data-user-id="${u.id}">
+                <div class="header-user-avatar">
+                    <img src="${u.avatarUrl}" alt="${fullName}">
+                </div>
+                <div class="header-user-info">
+                    <span class="header-user-name">${escapeHtml(fullName)}</span>
+                    <span class="header-user-email">${escapeHtml(email)}</span>
+                </div>
+            </div>`;
+        } else {
+            const initials = getInitials(fullName);
+            return `
+            <div class="header-user-item" data-user-id="${u.id}">
+                <div class="header-user-avatar" style="
+                    width:32px; height:32px; border-radius:50%;
+                    background:#aaa; color:#fff; display:flex;
+                    align-items:center; justify-content:center;
+                    font-weight:bold; font-size:0.8rem;
+                ">
+                    ${initials}
+                </div>
+                <div class="header-user-info">
+                    <span class="header-user-name">${escapeHtml(fullName)}</span>
+                    <span class="header-user-email">${escapeHtml(email)}</span>
+                </div>
+            </div>`;
+        }
+    }).join('');
+
+    headerResultsContainer.style.display = 'block';
+
+    document.querySelectorAll('.header-user-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const userId = item.dataset.userId;
+            headerResultsContainer.style.display = 'none';
+            headerSearchInput.value = '';
+            window.location.href = `../dashboard.html?uid=${encodeURIComponent(userId)}`;
+        });
+    });
+}
+
+// Фильтры сообществ
+filterButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        filterButtons.forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-pressed', 'true');
+        currentFilter = btn.dataset.filter;
+        filterCommunities();
+    });
+});
+
+communitySearchInput.addEventListener('input', e => {
+    communitySearchTerm = e.target.value;
+    filterCommunities();
+});
+
+headerSearchInput.addEventListener('input', e => {
+    const term = e.target.value.trim().toLowerCase();
+    filterHeaderUsers(term);
+});
+
+document.addEventListener('click', e => {
+    if (!headerSearchInput.contains(e.target) && !headerResultsContainer.contains(e.target)) {
+        headerResultsContainer.style.display = 'none';
+    }
+});
+
+onAuthStateChanged(auth, user => {
+    if (user) {
+        currentUser = user;
+        fetchCommunities();
+        fetchAllUsersHeader();
+    } else {
+        showError('Пожалуйста, войдите, чтобы просматривать сообщества');
+    }
+});
+</script>

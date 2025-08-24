@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Generator</title>
+    <link rel="stylesheet" href="quiz.css">
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth-compat.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="logo">Quiz Generator</h1>
+            <p class="subtitle">Create engaging quizzes manually or with AI assistance</p>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Mode Selection -->
+            <div class="mode-selector">
+                <button class="mode-btn active" data-mode="manual">
+                    <span class="icon">✏️</span>
+                    Manual Creation
+                </button>
+                <button class="mode-btn" data-mode="ai">
+                    <span class="icon">🤖</span>
+                    AI Generation
+                </button>
+            </div>
+
+            <!-- Manual Quiz Creation -->
+            <section class="quiz-section manual-section active">
+                <div class="section-header">
+                    <h2>Create Quiz Manually</h2>
+                    <p>Build your quiz question by question</p>
+                </div>
+
+                <div class="quiz-form">
+                    <div class="form-group">
+                        <label for="quiz-title">Quiz Title</label>
+                        <input type="text" id="quiz-title" placeholder="Enter quiz title" required>
+                    </div>
+
+                    <div class="questions-container">
+                        <div class="questions-header">
+                            <h3>Questions</h3>
+                            <button class="add-question-btn" type="button">
+                                <span class="icon">+</span>
+                                Add Question
+                            </button>
+                        </div>
+                        <div class="questions-list"></div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary save-quiz-btn" type="button">
+                            <span class="icon">💾</span>
+                            Save Quiz
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Quiz Generation -->
+            <section class="quiz-section ai-section">
+                <div class="section-header">
+                    <h2>Generate Quiz with AI</h2>
+                    <p>Provide your materials and let AI create questions</p>
+                </div>
+
+                <div class="ai-form">
+                    <div class="form-group">
+                        <label for="ai-quiz-title">Quiz Title</label>
+                        <input type="text" id="ai-quiz-title" placeholder="Enter quiz title" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="study-material">Study Material</label>
+                        <textarea id="study-material" 
+                                placeholder="Paste your study material, notes, or content here. The AI will analyze this content to generate relevant questions." 
+                                rows="8" required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="question-count">Number of Questions</label>
+                        <select id="question-count">
+                            <option value="5">5 Questions</option>
+                            <option value="10" selected>10 Questions</option>
+                            <option value="15">15 Questions</option>
+                            <option value="20">20 Questions</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button class="btn btn-primary generate-quiz-btn" type="button">
+                            <span class="icon">🤖</span>
+                            Generate Quiz
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generated Quiz Preview -->
+                <div class="generated-quiz-preview" style="display: none;">
+                    <h3>Generated Quiz Preview</h3>
+                    <div class="preview-content"></div>
+                    <div class="preview-actions">
+                        <button class="btn btn-secondary edit-generated-btn">Edit Questions</button>
+                        <button class="btn btn-primary save-generated-btn">Save Quiz</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Saved Quizzes -->
+            <section class="saved-quizzes-section">
+                <div class="section-header">
+                    <h2>Your Quizzes</h2>
+                    <p>Manage your created quizzes</p>
+                </div>
+                <div class="saved-quizzes-list">
+                    <div class="empty-state">
+                        <span class="icon">📝</span>
+                        <p>No quizzes created yet</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Loading Spinner -->
+        <div class="loading-overlay" id="loading-overlay">
+            <div class="spinner">
+                <div class="spinner-inner"></div>
+            </div>
+            <p class="loading-text">Processing...</p>
+        </div>
+
+        <!-- Toast Notifications -->
+        <div class="toast-container" id="toast-container"></div>
+    </div>
+
+    <!-- Scripts -->
+<!-- Стало -->
+<script type="module" src="firebase-config.js"></script>
+<script type="module" src="quiz-manager.js"></script>
+<script type="module" src="ui-manager.js"></script>
+<script type="module" src="quiz.js"></script>
+</body>
+</html>

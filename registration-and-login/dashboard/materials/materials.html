@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson Categories - Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            color: #334155;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        /* Header Styles */
+        .header {
+            position: sticky;
+            top: 0;
+            background-color: white;
+            border-bottom: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo {
+            font-size: 22px;
+            font-weight: 700;
+            color: #3b82f6;
+            text-decoration: none;
+        }
+
+        .nav {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            font-weight: 500;
+            color: #666;
+            padding-bottom: 4px;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: #3b82f6;
+        }
+
+        .nav-link.active {
+            color: #3b82f6;
+        }
+
+        .nav-link.active::after {
+            content: '';
+            position: absolute;
+            bottom: -16px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #3b82f6;
+        }
+
+        .search-container {
+            position: relative;
+            width: 280px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            background-color: #fff;
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: 2px solid #3b82f6;
+            outline-offset: -1px;
+            border-color: #3b82f6;
+        }
+
+        .search-input::placeholder {
+            color: #9ca3af;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 16px;
+            height: 16px;
+        }
+
+        /* Main Content */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 18px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding: 24px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            background-color: white;
+            color: #64748b;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .filter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .filter-btn:hover::before {
+            left: 100%;
+        }
+
+        .filter-btn:hover {
+            border-color: #3b82f6;
+            color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #3b82f6 100%);
+            border-color: transparent;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .category-search {
+            position: relative;
+            width: 320px;
+        }
+
+        .category-search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            background-color: #fff;
+            transition: all 0.3s ease;
+        }
+
+        .category-search-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .category-search .search-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Categories Grid */
+        .categories-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .category-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .category-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .category-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .category-icon.math {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+        }
+
+        .category-icon.science {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+
+        .category-icon.language {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        }
+
+        .category-icon.history {
+            background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+        }
+
+        .category-icon.arts {
+            background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);
+        }
+
+        .category-icon.technology {
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .category-info {
+            flex: 1;
+        }
+
+        .category-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .category-level {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #475569;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .category-level.beginner {
+            background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+            color: #166534;
+        }
+
+        .category-level.intermediate {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+        }
+
+        .category-level.advanced {
+            background: linear-gradient(135deg, #fecaca 0%, #fca5a5 100%);
+            color: #dc2626;
+        }
+
+        .category-description {
+            color: #64748b;
+            margin: 16px 0;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+
+        .category-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0;
+            padding: 16px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-radius: 12px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .category-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .category-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #059669;
+        }
+
+        .category-price.free {
+            color: #3b82f6;
+        }
+
+        .category-explore-btn {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-explore-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .category-explore-btn:hover::before {
+            left: 100%;
+        }
+
+        .category-explore-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        /* Loading Spinner */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 100px 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: #64748b;
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 100px 20px;
+        }
+
+        .empty-state-icon {
+            width: 80px;
+            height: 80px;
+            color: #cbd5e1;
+            margin: 0 auto 24px;
+        }
+
+        .empty-state-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 12px;
+        }
+
+        .empty-state-description {
+            color: #64748b;
+            font-size: 16px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* Error State */
+        .error-container {
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+            border: 2px solid #fecaca;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 32px;
+        }
+
+        .error-title {
+            color: #dc2626;
+            font-weight: 700;
+            font-size: 18px;
+            margin-bottom: 8px;
+        }
+
+        .error-message {
+            color: #dc2626;
+            font-size: 14px;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-container {
+                flex-direction: column;
+                gap: 16px;
+                align-items: stretch;
+            }
+
+            .nav {
+                justify-content: center;
+                gap: 24px;
+            }
+
+            .search-container {
+                width: 100%;
+            }
+
+            .filter-controls {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 16px;
+            }
+
+            .category-search {
+                width: 100%;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .main-content {
+                padding: 24px 16px;
+            }
+
+            .page-title {
+                font-size: 28px;
+            }
+
+            .categories-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .category-card {
+                padding: 20px;
+            }
+
+            .category-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 12px;
+            }
+
+            .category-stats {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .category-footer {
+                flex-direction: column;
+                gap: 16px;
+            }
+        }
+        .header-search-results .header-user-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.header-search-results .header-user-item:hover {
+    background: #f1f5f9;
+}
+
+.header-search-results .header-user-avatar img {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.header-user-info {
+    display: flex;
+    align-items: center;
+    gap: 16px; /* Расстояние между именем и email */
+}
+
+.header-user-name {
+    font-weight: 600;
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.header-user-email {
+    font-size: 12px;
+    color: #64748b;
+}
+.header-user-initials {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: #3b82f6;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header" role="banner">
+        <div class="header-container">
+            <a href="#" class="logo">EduConnect</a>
+
+            <nav class="nav" role="navigation" aria-label="Main navigation">
+                <a href="../homefeed/homefeed.html" class="nav-link">Home Feed</a>
+                <a href="materials.html" class="nav-link active">Lesson Categories</a>
+                <a href="../communities/communities.html" class="nav-link">Communities</a>
+                <a href="../dashboard.html" class="nav-link">Dashboard</a>
+            </nav>
+            
+            <div class="search-container">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" class="search-input" placeholder="Search users..." aria-label="Search users">
+            </div>
+            <div id="categorySearchResults" class="header-search-results" style="display: none; position: absolute; top: 50px; left: 0; width: 100%; background: white; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); z-index: 10; max-height: 300px; overflow-y: auto;"></div>
+
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content" role="main">
+        <div class="page-header">
+            <h1 class="page-title">Lesson Categories</h1>
+            <p class="page-subtitle">Discover comprehensive lesson materials and prepare for exams at the highest level</p>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="filter-controls">
+            <div class="filter-buttons" role="group" aria-label="Category level filters">
+                <button class="filter-btn active" data-filter="all" aria-pressed="true">All Lessons</button>
+                <button class="filter-btn" data-filter="Beginner" aria-pressed="false">10th graders</button>
+                <button class="filter-btn" data-filter="Intermediate" aria-pressed="false">11th graders</button>
+                <button class="filter-btn" data-filter="Advanced" aria-pressed="false">Clubs</button>
+            </div>
+            
+            <div class="category-search">
+                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input type="text" class="category-search-input" placeholder="Search lesson categories..." aria-label="Search lesson categories" id="categorySearchInput">
+            </div>
+        </div>
+
+        <!-- Error Container -->
+        <div id="errorContainer" class="error-container" style="display: none;" role="alert">
+            <div class="error-title">Error loading lesson categories</div>
+            <div class="error-message" id="errorMessage"></div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loadingContainer" class="loading-container">
+            <div class="spinner" aria-hidden="true"></div>
+            <div class="loading-text">Loading lesson categories...</div>
+        </div>
+
+        <!-- Categories Container -->
+        <div id="categoriesContainer" class="categories-container" style="display: none;">
+            <!-- Categories will be populated here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display: none;">
+            <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+            </svg>
+            <h3 class="empty-state-title">No lesson categories found</h3>
+            <p class="empty-state-description">Try adjusting your filters or search terms to find the perfect learning path</p>
+        </div>
+    </main>
+
+    <!-- Firebase SDK -->
+<script type="module">
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+import { getFirestore, collection, getDocs, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyCkU8o1vz4Tmo0yVRFrlq2_1_eDfI_GPaA",
+    authDomain: "educonnect-958e2.firebaseapp.com",
+    projectId: "educonnect-958e2",
+    storageBucket: "educonnect-958e2.appspot.com",
+    messagingSenderId: "1044066506835",
+    appId: "1:1044066506835:web:ad2866ebfe60aa90978ea6"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// --- DOM Elements ---
+const loadingContainer = document.getElementById('loadingContainer');
+const categoriesContainer = document.getElementById('categoriesContainer');
+const emptyState = document.getElementById('emptyState');
+const errorContainer = document.getElementById('errorContainer');
+const errorMessage = document.getElementById('errorMessage');
+const categorySearchInput = document.getElementById('categorySearchInput');
+const filterButtons = document.querySelectorAll('.filter-btn');
+const userSearchInput = document.querySelector('.search-input');
+const searchResultsContainer = document.getElementById('categorySearchResults');
+
+// --- Global variables ---
+let allCategories = [];
+let filteredCategories = [];
+let currentFilter = 'all';
+let searchTerm = '';
+let allUsers = [];
+
+// --- Loading / UI helpers ---
+function showLoading() {
+    loadingContainer.style.display = 'flex';
+    categoriesContainer.style.display = 'none';
+    emptyState.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'none';
+}
+
+function showError(message) {
+    loadingContainer.style.display = 'none';
+    categoriesContainer.style.display = 'none';
+    emptyState.style.display = 'none';
+    if (errorContainer && errorMessage) {
+        errorContainer.style.display = 'block';
+        errorMessage.textContent = message;
+    }
+}
+
+function showEmpty() {
+    loadingContainer.style.display = 'none';
+    categoriesContainer.style.display = 'none';
+    emptyState.style.display = 'block';
+    if (errorContainer) errorContainer.style.display = 'none';
+}
+
+function showCategories() {
+    loadingContainer.style.display = 'none';
+    categoriesContainer.style.display = 'grid';
+    emptyState.style.display = 'none';
+    if (errorContainer) errorContainer.style.display = 'none';
+}
+
+// --- Helpers for rendering categories ---
+function getCategoryIcon(subject) {
+    const icons = {
+        'Mathematics': '📐', 'Science': '🔬', 'Physics': '⚛️', 'Chemistry': '🧪', 'Biology': '🧬',
+        'English': '📚', 'Literature': '📖', 'History': '🏛️', 'Geography': '🌍', 'Art': '🎨',
+        'Music': '🎵', 'Technology': '💻', 'Programming': '👨‍💻', 'Economics': '📊',
+        'Philosophy': '🤔', 'Psychology': '🧠'
+    };
+    return icons[subject] || '📚';
+}
+
+function getIconClass(subject) {
+    const classes = {
+        'Mathematics': 'math', 'Physics': 'science', 'Chemistry': 'science', 'Biology': 'science',
+        'Science': 'science', 'English': 'language', 'Literature': 'language', 'History': 'history',
+        'Geography': 'history', 'Art': 'arts', 'Music': 'arts', 'Technology': 'technology',
+        'Programming': 'technology', 'Economics': 'math', 'Philosophy': 'history', 'Psychology': 'science'
+    };
+    return classes[subject] || 'math';
+}
+
+function getLevelClass(type) {
+    return type.toLowerCase().replace(/\s+/g, '-');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// --- Render categories ---
+function renderCategories(categories) {
+    if (!categories || categories.length === 0) {
+        showEmpty();
+        return;
+    }
+
+    showCategories();
+
+    categoriesContainer.innerHTML = categories.map(category => `
+        <article class="category-card" role="article">
+            <div class="category-header">
+                <div class="category-icon ${getIconClass(category.subject)}">
+                    ${getCategoryIcon(category.subject)}
+                </div>
+                <div class="category-info">
+                    <h2 class="category-name">${escapeHtml(category.name)}</h2>
+                    <span class="category-level ${getLevelClass(category.type)}">${escapeHtml(category.type)}</span>
+                </div>
+            </div>
+            <p class="category-description">${escapeHtml(category.description)}</p>
+            <div class="category-stats">
+                <div class="stat-item">
+                    <span class="stat-number">${category.materialsCount || 0}</span>
+                    <span class="stat-label">Materials</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">${category.membersCount || 0}</span>
+                    <span class="stat-label">Members</span>
+                </div>
+            </div>
+            <div class="category-footer">
+                <button class="category-explore-btn" onclick="exploreCategory('${category.id}')">
+                    Explore Materials
+                </button>
+            </div>
+        </article>
+    `).join('');
+}
+
+// --- Filter categories ---
+function filterCategories() {
+    let filtered = allCategories;
+    if (currentFilter !== 'all') filtered = filtered.filter(c => c.type === currentFilter);
+    if (searchTerm.trim()) {
+        const searchLower = searchTerm.toLowerCase().trim();
+        filtered = filtered.filter(c =>
+            c.name.toLowerCase().includes(searchLower) ||
+            c.description.toLowerCase().includes(searchLower) ||
+            c.subject.toLowerCase().includes(searchLower)
+        );
+    }
+    filteredCategories = filtered;
+    renderCategories(filteredCategories);
+}
+
+// --- Load lesson categories with materials count ---
+async function loadCategories() {
+    showLoading();
+    try {
+        const categoriesRef = collection(db, 'lesson-categories');
+        const q = query(categoriesRef, orderBy('name'));
+        const snapshot = await getDocs(q);
+
+        const categories = await Promise.all(snapshot.docs.map(async doc => {
+            const data = doc.data();
+
+            // Получаем количество материалов из подколлекции study-materials
+            const materialsRef = collection(db, 'lesson-categories', doc.id, 'study-materials');
+            const materialsSnapshot = await getDocs(materialsRef);
+
+            return {
+                id: doc.id,
+                ...data,
+                materialsCount: materialsSnapshot.size // количество материалов
+            };
+        }));
+
+        allCategories = categories;
+        filterCategories();
+    } catch (err) {
+        console.error(err);
+        showError(`Failed to load lesson categories: ${err.message}`);
+    }
+}
+
+// --- Handle filter buttons ---
+filterButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        filterButtons.forEach(btn => { btn.classList.remove('active'); btn.setAttribute('aria-pressed','false'); });
+        button.classList.add('active');
+        button.setAttribute('aria-pressed','true');
+        currentFilter = button.dataset.filter;
+        filterCategories();
+    });
+});
+
+// --- Handle category search ---
+categorySearchInput.addEventListener('input', e => {
+    searchTerm = e.target.value;
+    filterCategories();
+});
+
+// --- Explore category ---
+window.exploreCategory = function(categoryId) {
+    window.location.href = `../material/material.html?categoryId=${categoryId}`;
+};
+
+// --- Load users ---
+async function loadUsers() {
+    try {
+        const usersRef = collection(db, 'users');
+        const snapshot = await getDocs(usersRef);
+        allUsers = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    } catch (err) { console.error('Failed to load users:', err); }
+}
+
+// --- Render user search results ---
+// --- Render user search results ---
+function renderUserResults(users) {
+    if (!users.length) {
+        searchResultsContainer.innerHTML = '<p style="padding:12px;color:#64748b;">No users found</p>';
+        searchResultsContainer.style.display = 'block';
+        return;
+    }
+
+    searchResultsContainer.innerHTML = users.map(user => {
+        const initials = `${user.firstName ? user.firstName[0] : ''}${user.lastName ? user.lastName[0] : ''}`.toUpperCase();
+        const avatarHtml = user.avatarUrl 
+            ? `<img src="${user.avatarUrl}" alt="${user.firstName || ''} ${user.lastName || ''}">`
+            : `<div class="header-user-initials">${initials}</div>`;
+        return `
+            <div class="header-user-item" onclick="openUserDashboard('${user.id}')">
+                <div class="header-user-avatar">${avatarHtml}</div>
+                <div class="header-user-info">
+                    <span class="header-user-name">${user.firstName || ''} ${user.lastName || ''}</span>
+                    <span class="header-user-email">${user.email || ''}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    searchResultsContainer.style.display = 'block';
+}
+
+// --- Open user dashboard ---
+window.openUserDashboard = function(userId) {
+    window.location.href = `../dashboard.html?uid=${userId}`;
+};
+
+// --- Handle user search input ---
+userSearchInput.addEventListener('input', e => {
+    const term = e.target.value.toLowerCase().trim();
+    if (!term) { searchResultsContainer.style.display = 'none'; return; }
+    const results = allUsers.filter(user =>
+        (user.firstName && user.firstName.toLowerCase().includes(term)) ||
+        (user.lastName && user.lastName.toLowerCase().includes(term)) ||
+        (user.email && user.email.toLowerCase().includes(term))
+    );
+    renderUserResults(results);
+});
+
+// --- Hide search results on click outside ---
+document.addEventListener('click', e => {
+    if (!searchResultsContainer.contains(e.target) && e.target !== userSearchInput) {
+        searchResultsContainer.style.display = 'none';
+    }
+});
+
+// --- Initialize ---
+document.addEventListener('DOMContentLoaded', () => {
+    loadCategories();
+    loadUsers();
+});
+</script>
